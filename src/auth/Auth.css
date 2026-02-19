@@ -1,0 +1,41 @@
+.auth {
+  /* display:flex;  */
+  justify-content: center;
+  align-items: center;
+}
+
+.sign-in-form {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+.sign-up-form {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.auth-element {
+  display: flex;
+}
+
+.auth-switch {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.auth-switch-button {
+  display: flex;
+}
+
+.active {
+  border: none;
+  border-bottom: 3px solid;
+  border-color: rgba(94, 255, 0, 0.39);
+}
+
+.auth-switch-button:hover {
+  cursor: pointer;
+  /* background-color: rgba(255, 255, 255, 0.171); */
+}
