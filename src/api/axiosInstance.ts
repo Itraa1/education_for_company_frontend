@@ -1,12 +1,12 @@
 import axios from "axios";
 
-const token = ""
+ const token = ""
 const axiosInstance = axios.create({
-    baseURL:"ttp://localhost:1337",
+    baseURL:"http://localhost:1337",
     withCredentials: false,
      headers: {
     'Content-Type': 'application/json',
-    "Authorization": `Bearer ${token}`
+     "Authorization": `Bearer ${token}`
   },
 });
 

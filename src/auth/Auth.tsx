@@ -1,55 +1,11 @@
 import { useState } from "react";
+import SignUP from "./SignUp";
+import SignIn from "./SignIn";
 import "./Auth.css";
 
 export default function Auth() {
   const [selectedAuth, setSelectedAuth] = useState(true);
 
-  const signIn = (
-    <form className="sign-in-form">
-      <div>
-        <label className="auth-element">Email:</label>
-        <input className="auth-element" type="text" name="name"></input>
-      </div>
-
-      <div>
-        <label className="auth-element">Пароль:</label>
-        <input className="auth-element" type="password"></input>
-      </div>
-
-      <input type="submit" value="Вход" />
-    </form>
-  );
-
-  const signUp = (
-    <form
-      className="sign-up-form"
-      onSubmit={(event) => {
-        event.preventDefault();
-      }}
-    >
-      <div>
-        <label className="auth-element">Имя пользователя:</label>
-        <input className="auth-element" type="text" name="name"></input>
-      </div>
-
-      <div>
-        <label className="auth-element">Email:</label>
-        <input className="auth-element" type="email" name="email"></input>
-      </div>
-
-      <div>
-        <label className="auth-element">Пароль:</label>
-        <input className="auth-element" type="password"></input>
-      </div>
-
-      <div>
-        <label className="auth-element">Подтвердите пароль:</label>
-        <input className="auth-element" type="password"></input>
-      </div>
-
-      <input type="submit" value="Регистрация" />
-    </form>
-  );
 
   return (
     <>
@@ -70,7 +26,7 @@ export default function Auth() {
         </div>
       </div>
 
-      {selectedAuth ? signIn : signUp}
+      {selectedAuth ? <SignIn/> : <SignUP/>}
     </>
   );
 }
