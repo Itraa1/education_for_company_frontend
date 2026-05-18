@@ -1,8 +1,11 @@
 import { useState } from "react";
-import axiosInstance from "../api/axiosInstance";
+import { useNavigate } from "react-router";
+import { publicRequest } from "../controllers/api/axiosInstance";
 
 export default function SignUP() {
   const [isSubmiting, setIsSubmiting] = useState(false);
+  const [error, setError] = useState("");
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     username: "",
     email: "",
@@ -18,92 +21,128 @@ export default function SignUP() {
       ...prevState,
       [name]: value,
     }));
+    setError("");
   }
 
-  function handleFormSubmit(event: React.SubmitEvent) {
+  function handleFormSubmitRegistr(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setIsSubmiting(true);
-    if (formData.password !== formData.confirmedPassword) {
-      alert("Пароли не совпадают");
+    setError("");
+
+    if (!formData.username.trim()) {
+      setError("Введите имя пользователя");
       setIsSubmiting(false);
       return;
     }
 
-    axiosInstance
+    if (!formData.email.trim()) {
+      setError("Введите email");
+      setIsSubmiting(false);
+      return;
+    }
+
+    if (formData.password.length < 6) {
+      setError("Пароль должен быть не менее 6 символов");
+      setIsSubmiting(false);
+      return;
+    }
+
+    if (formData.password !== formData.confirmedPassword) {
+      setError("Пароли не совпадают");
+      setIsSubmiting(false);
+      return;
+    }
+
+    publicRequest
       .post("/api/auth/local/register", {
         username: formData.username,
         email: formData.email,
         password: formData.password,
       })
+      .then((res) => {
+        localStorage.setItem("auth_token", res!.data.jwt);
+        navigate("/");
+      })
       .catch((error) => {
         console.log("Полная ошибка:", error);
-        console.log("Ответ сервера:", error.response);
-        console.log("Данные ошибки:", error.response?.data);
-        console.log("Статус:", error.response?.status);
-        console.log("Заголовки:", error.response?.headers);
+        if (error.response?.status === 400) {
+          setError("Этот email уже зарегистрирован");
+        } else {
+          setError("Ошибка регистрации. Попробуйте позже");
+        }
       })
-      .then((res) => console.log(res));
-
-    setIsSubmiting(false);
+      .finally(() => {
+        setIsSubmiting(false);
+      });
   }
 
   return (
-    <>
-      <form className="sign-up-form" onSubmit={handleFormSubmit}>
-        <div>
-          <label className="auth-element">Имя пользователя:</label>
-          <input
-            className="auth-element"
-            type="text"
-            name="username"
-            onChange={changingValueForm}
-            value={formData.username}
-            required
-          ></input>
-        </div>
+    <form className="sign-up-form" onSubmit={handleFormSubmitRegistr}>
+      {error && <div className="error-message">⚠️ {error}</div>}
 
-        <div>
-          <label className="auth-element">Email:</label>
-          <input
-            className="auth-element"
-            type="email"
-            name="email"
-            onChange={changingValueForm}
-            value={formData.email}
-            required
-          ></input>
-        </div>
-
-        <div>
-          <label className="auth-element">Пароль:</label>
-          <input
-            className="auth-element"
-            name="password"
-            type="password"
-            onChange={changingValueForm}
-            value={formData.password}
-            required
-          ></input>
-        </div>
-
-        <div>
-          <label className="auth-element">Подтвердите пароль:</label>
-          <input
-            className="auth-element"
-            name="confirmedPassword"
-            type="password"
-            onChange={changingValueForm}
-            value={formData.confirmedPassword}
-            required
-          ></input>
-        </div>
-
+      <div className="form-group">
+        <label className="form-label">Имя пользователя</label>
         <input
-          type="submit"
-          value={isSubmiting ? "Регистрация..." : "Регистрация"}
-          disabled={isSubmiting}
+          className="auth-element"
+          type="text"
+          name="username"
+          placeholder="ваше_имя"
+          onChange={changingValueForm}
+          value={formData.username}
+          required
         />
-      </form>
-    </>
+      </div>
+
+      <div className="form-group">
+        <label className="form-label">Email</label>
+        <input
+          className="auth-element"
+          type="email"
+          name="email"
+          placeholder="example@company.com"
+          onChange={changingValueForm}
+          value={formData.email}
+          required
+        />
+      </div>
+
+      <div className="form-group">
+        <label className="form-label">Пароль</label>
+        <input
+          className="auth-element"
+          name="password"
+          type="password"
+          placeholder="••••••••"
+          onChange={changingValueForm}
+          value={formData.password}
+          required
+        />
+      </div>
+
+      <div className="form-group">
+        <label className="form-label">Подтвердите пароль</label>
+        <input
+          className="auth-element"
+          name="confirmedPassword"
+          type="password"
+          placeholder="••••••••"
+          onChange={changingValueForm}
+          value={formData.confirmedPassword}
+          required
+        />
+      </div>
+
+      <button
+        className="auth-element-submit-button"
+        type="submit"
+        disabled={isSubmiting}
+      >
+        {isSubmiting ? "⏳ Регистрация..." : "Зарегистрироваться"}
+      </button>
+
+      <div className="auth-footer">
+        Есть аккаунт? <a href="#" onClick={() => window.location.reload()}>Войти</a>
+      </div>
+    </form>
   );
 }
