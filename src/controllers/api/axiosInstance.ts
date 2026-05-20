@@ -8,16 +8,13 @@ export const publicRequest = axios.create({
   },
 });
 
-export function authentificatedRequest(token:string){
-
-return axios.create({
-  baseURL: "http://localhost:1337",
-  withCredentials: false,
-  headers: {
-    "Content-Type": "application/json",
-    Authorization: `Bearer ${token}`,
-  },
-});
+export function authentificatedRequest(token: string) {
+  return axios.create({
+    baseURL: "http://localhost:1337",
+    withCredentials: false,
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${token}`,
+    },
+  });
 }
-
-

@@ -19,13 +19,12 @@ export interface Course {
 
 export interface CourseInput {
   title: string;
-  slug: string;
   description: string;
   category: CourseCategory;
   level: CourseLevel;
   duration: number;
   instructor: string;
-  text: string;
+  content: string;
 }
 
 export interface CoursesResponse {

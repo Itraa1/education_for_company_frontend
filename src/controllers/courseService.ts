@@ -1,10 +1,10 @@
-import type { Course, CoursesResponse, CourseInput } from "../types/course";
+import type { Course, CourseInput, CoursesResponse } from "../types/course";
 import { authentificatedRequest } from "./api/axiosInstance";
 
 export async function fetchCourses(): Promise<Course[]> {
   try {
     const token = localStorage.getItem("auth_token");
-    
+
     if (!token) {
       throw new Error("Токен не найден. Пожалуйста, авторизуйтесь.");
     }
@@ -18,30 +18,11 @@ export async function fetchCourses(): Promise<Course[]> {
   }
 }
 
-export async function createCourse(courseData: CourseInput): Promise<Course> {
-  try {
-    const token = localStorage.getItem("auth_token");
-    
-    if (!token) {
-      throw new Error("Токен не найден. Пожалуйста, авторизуйтесь.");
-    }
-
-    const axiosInstance = authentificatedRequest(token);
-    const response = await axiosInstance.post<{ data: Course }>("/api/courses", {
-      data: courseData,
-    });
-    return response.data.data;
-  } catch (error) {
-    console.error("Error creating course:", error);
-    throw error;
-  }
-}
-
 export function getCategoryLabel(category: string): string {
   const labels: Record<string, string> = {
-    programming: "💻 Программирование",
-    design: "🎨 Дизайн",
-    business: "📊 Бизнес",
+    programming: " Программирование",
+    design: " Дизайн",
+    business: " Бизнес",
   };
   return labels[category] || category;
 }
@@ -71,4 +52,25 @@ export function getLevelColor(level: string): string {
     advanced: "#ff6b9d",
   };
   return colors[level] || "#5eff00";
+}
+
+export async function createCourse(courseData: CourseInput) {
+  try {
+    const token = localStorage.getItem("auth_token");
+
+    if (!token) {
+      throw new Error("Токен не найден. Пожалуйста, авторизуйтесь.");
+    }
+    const axiosInstance = await authentificatedRequest(token);
+    const response = await axiosInstance.post(
+      "/api/courses",
+      {
+        "data": courseData,
+      },
+    );
+    return response.data.data;
+  } catch (error) {
+    console.error("Error creating course:", error);
+    throw error;
+  }
 }

@@ -11,13 +11,12 @@ export default function CreateCourse() {
 
   const [formData, setFormData] = useState<CourseInput>({
     title: "",
-    slug: "",
     description: "",
     category: "programming",
     level: "beginner",
-    duration: 10,
+    duration: 1,
     instructor: "",
-    text: "",
+    content: "",
   });
 
   const handleChange = (
@@ -56,10 +55,10 @@ export default function CreateCourse() {
       setError("Название курса обязательно");
       return;
     }
-    if (!formData.slug.trim()) {
-      setError("URL курса обязателен");
-      return;
-    }
+    // if (!formData.slug.trim()) {
+    //   setError("URL курса обязателен");
+    //   return;
+    // }
     if (!formData.description.trim()) {
       setError("Описание курса обязательно");
       return;
@@ -68,7 +67,7 @@ export default function CreateCourse() {
       setError("Имя инструктора обязательно");
       return;
     }
-    if (!formData.text.trim()) {
+    if (!formData.content.trim()) {
       setError("Текст курса обязателен");
       return;
     }
@@ -130,9 +129,9 @@ export default function CreateCourse() {
         </div>
 
         {/* URL курса */}
-        <div style={{ marginBottom: "1.5rem" }}>
+        {/* <div style={{ marginBottom: "1.5rem" }}>
           <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: "500" }}>
-            🔗 URL курса (автоматически генерируется) *
+             URL курса (автоматически генерируется) *
           </label>
           <input
             type="text"
@@ -151,12 +150,12 @@ export default function CreateCourse() {
               cursor: "not-allowed",
             }}
           />
-        </div>
+        </div> */}
 
         {/* Описание */}
         <div style={{ marginBottom: "1.5rem" }}>
           <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: "500" }}>
-            📖 Описание курса (краткое) *
+             Описание курса (краткое) *
           </label>
           <textarea
             name="description"
@@ -183,11 +182,11 @@ export default function CreateCourse() {
         {/* Текст курса */}
         <div style={{ marginBottom: "1.5rem" }}>
           <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: "500" }}>
-            📚 Основной текст курса *
+             Основной текст курса *
           </label>
           <textarea
-            name="text"
-            value={formData.text}
+            name="content"
+            value={formData.content}
             onChange={handleChange}
             placeholder="Введите основной текст курса (может содержать markdown)"
             rows={6}
@@ -210,7 +209,7 @@ export default function CreateCourse() {
         {/* Инструктор */}
         <div style={{ marginBottom: "1.5rem" }}>
           <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: "500" }}>
-            👨‍🏫 Имя инструктора *
+             Имя Автора *
           </label>
           <input
             type="text"
@@ -254,9 +253,9 @@ export default function CreateCourse() {
                 boxSizing: "border-box",
               }}
             >
-              <option value="programming">💻 Программирование</option>
-              <option value="design">🎨 Дизайн</option>
-              <option value="business">📊 Бизнес</option>
+              <option value="programming"> Программирование</option>
+              <option value="design"> Дизайн</option>
+              <option value="business"> Бизнес</option>
             </select>
           </div>
 
