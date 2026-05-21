@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router";
 import DashboardLayout from "./DashboardLayout";
-import { type CourseCategory, type CourseLevel, type CourseInput } from "../types/course";
+import { type CourseInput } from "../types/course";
 import { createCourse } from "../controllers/courseService";
 
 export default function CreateCourse() {

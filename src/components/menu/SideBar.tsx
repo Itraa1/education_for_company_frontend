@@ -1,5 +1,6 @@
 import { useNavigate, useLocation } from "react-router";
 import { StyledSideButton } from "./styledSideBar";
+import { useUser } from "../context/UserContext";
 
 type Props = {
   className?: string;
@@ -10,6 +11,9 @@ type MenuItemType = "catalog" | "active" | "completed" | "create";
 export default function SideBar(props: Props) {
   const navigate = useNavigate();
   const location = useLocation();
+  const { user } = useUser();
+
+
 
   const menuItems: Array<{
     id: MenuItemType;
@@ -17,11 +21,11 @@ export default function SideBar(props: Props) {
     icon: string;
     path: string;
   }> = [
-    { id: "catalog", name: "Каталог курсов", icon: "📚", path: "/catalog" },
-    { id: "active", name: "Активные курсы", icon: "📖", path: "/active" },
-    { id: "completed", name: "Завершенные курсы", icon: "✅", path: "/completed" },
-    { id: "create", name: "Создать курс", icon: "➕", path: "/create" },
-  ];
+      { id: "catalog", name: "Каталог курсов", icon: "", path: "/catalog" },
+      { id: "active", name: "Активные курсы", icon: "", path: "/active" },
+      { id: "completed", name: "Завершенные курсы", icon: "", path: "/completed" },
+      { id: "create", name: "Создать курс", icon: "", path: "/create" },
+    ];
 
   const getActiveMenu = (): MenuItemType => {
     const pathMap: Record<string, MenuItemType> = {
@@ -35,15 +39,20 @@ export default function SideBar(props: Props) {
 
   return (
     <div className={props.className}>
-      {menuItems.map((item) => (
-        <StyledSideButton
-          key={item.id}
-          buttonName={item.name}
-          icon={item.icon}
-          active={getActiveMenu() === item.id}
-          onClick={() => navigate(item.path)}
-        />
-      ))}
+      {menuItems.map((item) => {
+        if (item.id === "create" && user?.role.name != "Admin" && user?.role.name != "Author"){
+          return;
+        }
+          return (
+            <StyledSideButton
+              key={item.id}
+              buttonName={item.name}
+              icon={item.icon}
+              active={getActiveMenu() === item.id}
+              onClick={() => navigate(item.path)}
+            />
+          )
+      })}
     </div>
   );
 }

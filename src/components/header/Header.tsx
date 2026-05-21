@@ -25,10 +25,8 @@ export default function Header(props: Props) {
 
   const handleLogout = () => {
     // Очищаем токены и данные сессии
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
-    sessionStorage.removeItem("token");
-    sessionStorage.removeItem("user");
+    localStorage.removeItem("auth_token");
+    sessionStorage.removeItem("auth_token");
 
     // Закрываем меню
     setIsMenuOpen(false);
@@ -39,7 +37,7 @@ export default function Header(props: Props) {
 
   return (
     <header className={props.className}>
-      <h2>EDUCATION</h2>
+      <h2 onClick={() => navigate("/")} className="header-title">EDUCATION</h2>
       <div ref={menuRef} style={{ position: "relative" }}>
         <StyledProfileIconContainer onClick={() => setIsMenuOpen(!isMenuOpen)}>
           <StyledProfileOcin />
