@@ -1,15 +1,20 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
+import { useNavigate } from "react-router";
 import DashboardLayout from "./DashboardLayout";
 import { type Course } from "../types/course";
-import { fetchCourses, getCategoryLabel, getLevelLabel, getCategoryIcon } from "../controllers/courseService";
+import { fetchCourses, searchCourses, getCategoryLabel, getLevelLabel, getCategoryIcon } from "../controllers/courseService";
 import { enrollCourse, isEnrolled } from "../controllers/enrollService";
 
 export default function Catalog() {
+  const navigate = useNavigate();
   const [courses, setCourses] = useState<Course[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [enrolledIds, setEnrolledIds] = useState<Set<number>>(new Set());
+  const [searchQuery, setSearchQuery] = useState("");
+  const debounceTimerRef = useRef<number | null>(null);
 
+  // Загрузка курсов при монтировании компонента
   useEffect(() => {
     const loadCourses = async () => {
       try {
@@ -18,7 +23,6 @@ export default function Catalog() {
         const data = await fetchCourses();
         setCourses(data);
         
-        // Обновляем список записанных курсов
         const enrolled = new Set<number>();
         data.forEach(course => {
           if (isEnrolled(course.id)) {
@@ -38,7 +42,42 @@ export default function Catalog() {
     loadCourses();
   }, []);
 
-  const handleEnrollCourse = (course: Course) => {
+  // Обработка поиска с дебоунсом
+  const handleSearchChange = (value: string) => {
+    setSearchQuery(value);
+
+    if (debounceTimerRef.current) {
+      clearTimeout(debounceTimerRef.current);
+    }
+
+    debounceTimerRef.current = setTimeout(async () => {
+      try {
+        setLoading(true);
+        setError(null);
+
+        if (value.trim() === "") {
+          const data = await fetchCourses();
+          setCourses(data);
+        } else {
+          const data = await searchCourses(value);
+          setCourses(data);
+        }
+      } catch (err) {
+        console.error("Search failed:", err);
+        setError("Ошибка при поиске. Попробуйте еще раз.");
+        setCourses([]);
+      } finally {
+        setLoading(false);
+      }
+    }, 400);
+  };
+
+  const handleCourseClick = (documentId: string) => {
+    navigate(`/course/${documentId}`);
+  };
+
+  const handleEnrollCourse = (e: React.MouseEvent, course: Course) => {
+    e.stopPropagation();
     try {
       enrollCourse(course);
       setEnrolledIds(prev => new Set([...prev, course.id]));
@@ -54,6 +93,32 @@ export default function Catalog() {
       <div className="page-header">
         <h1 className="page-title">Каталог курсов</h1>
         <p className="page-subtitle">Выберите интересующий вас курс</p>
+      </div>
+
+      {/* Поисковая строка */}
+      <div style={{ marginBottom: "2rem" }}>
+        <input
+          type="text"
+          placeholder="🔍 Поиск курсов по названию..."
+          value={searchQuery}
+          onChange={(e) => handleSearchChange(e.target.value)}
+          style={{
+            width: "100%",
+            padding: "0.75rem 1rem",
+            fontSize: "1rem",
+            border: "2px solid var(--border-color)",
+            borderRadius: "0.5rem",
+            backgroundColor: "var(--bg-secondary)",
+            color: "var(--text-primary)",
+            transition: "border-color 0.3s",
+          }}
+          onFocus={(e) => {
+            e.currentTarget.style.borderColor = "var(--primary)";
+          }}
+          onBlur={(e) => {
+            e.currentTarget.style.borderColor = "var(--border-color)";
+          }}
+        />
       </div>
 
       {error && (
@@ -74,7 +139,20 @@ export default function Catalog() {
         <section className="courses-section">
           <div className="courses-grid">
             {courses.map((course) => (
-              <div key={course.id} className="course-card">
+              <div 
+                key={course.documentId} 
+                className="course-card"
+                onClick={() => handleCourseClick(course.documentId)}
+                style={{ cursor: "pointer", transition: "transform 0.2s, box-shadow 0.2s" }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.transform = "translateY(-4px)";
+                  e.currentTarget.style.boxShadow = "0 8px 16px rgba(0, 0, 0, 0.2)";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.transform = "translateY(0)";
+                  e.currentTarget.style.boxShadow = "";
+                }}
+              >
                 <div className="course-card-image">
                   {getCategoryIcon(course.category)}
                 </div>
@@ -84,7 +162,7 @@ export default function Catalog() {
                     {course.description.substring(0, 150)}...
                   </p>
                   <div className="course-card-meta">
-                    <span>👨‍🏫 {course.instructor}</span>
+                    <span>👨‍🏫 {course?.users_permissions_user?.username}</span>
                     <span>⏱️ {course.duration} часов</span>
                   </div>
                   <div className="course-card-meta">
@@ -99,7 +177,7 @@ export default function Catalog() {
                   </div>
                   <button
                     className="course-card-button"
-                    onClick={() => handleEnrollCourse(course)}
+                    onClick={(e) => handleEnrollCourse(e, course)}
                     disabled={enrolledIds.has(course.id)}
                     style={{
                       opacity: enrolledIds.has(course.id) ? 0.6 : 1,

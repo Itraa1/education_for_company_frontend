@@ -53,7 +53,7 @@ export default function ActiveCourses() {
                     {course.description.substring(0, 150)}...
                   </p>
                   <div className="course-card-meta">
-                    <span>👨‍🏫 {course.instructor}</span>
+                    <span>👨‍🏫 {course?.users_permissions_user?.username}</span>
                     <span>⏱️ {course.duration} часов</span>
                   </div>
                   <div className="course-card-meta">

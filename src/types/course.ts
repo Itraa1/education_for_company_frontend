@@ -1,6 +1,19 @@
 export type CourseCategory = "programming" | "design" | "business";
 export type CourseLevel = "beginner" | "intermediate" | "advanced";
 
+export interface Users_permissions_user {
+  id: number;
+  documentId: string;
+  username: string;
+  email: string;
+  provider: string;
+  confirmed: boolean;
+  blocked: boolean;
+  createdAt: string;
+  updatedAt: string;
+  publishedAt: string;
+}
+
 export interface Course {
   id: number;
   documentId: string;
@@ -10,8 +23,9 @@ export interface Course {
   category: CourseCategory;
   level: CourseLevel;
   duration: number;
-  instructor: string;
+  users_permissions_user: Users_permissions_user;
   text: string;
+  youtube_url?: string;
   createdAt: string;
   updatedAt: string;
   publishedAt: string;
@@ -23,7 +37,7 @@ export interface CourseInput {
   category: CourseCategory;
   level: CourseLevel;
   duration: number;
-  instructor: string;
+  // instructor: string;
   content: string;
 }
 

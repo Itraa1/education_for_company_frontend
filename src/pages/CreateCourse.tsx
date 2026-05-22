@@ -15,7 +15,7 @@ export default function CreateCourse() {
     category: "programming",
     level: "beginner",
     duration: 1,
-    instructor: "",
+    // instructor: "",
     content: "",
   });
 
@@ -63,10 +63,10 @@ export default function CreateCourse() {
       setError("Описание курса обязательно");
       return;
     }
-    if (!formData.instructor.trim()) {
-      setError("Имя инструктора обязательно");
-      return;
-    }
+    // if (!formData.instructor.trim()) {
+    //   setError("Имя инструктора обязательно");
+    //   return;
+    // }
     if (!formData.content.trim()) {
       setError("Текст курса обязателен");
       return;
@@ -207,7 +207,7 @@ export default function CreateCourse() {
         </div>
 
         {/* Инструктор */}
-        <div style={{ marginBottom: "1.5rem" }}>
+        {/* <div style={{ marginBottom: "1.5rem" }}>
           <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: "500" }}>
              Имя Автора *
           </label>
@@ -229,7 +229,7 @@ export default function CreateCourse() {
             }}
             required
           />
-        </div>
+        </div> */}
 
         {/* Категория и Уровень в одной строке */}
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem", marginBottom: "1.5rem" }}>

@@ -10,10 +10,49 @@ export async function fetchCourses(): Promise<Course[]> {
     }
 
     const axiosInstance = authentificatedRequest(token);
-    const response = await axiosInstance.get<CoursesResponse>("/api/courses");
+    const response = await axiosInstance.get<CoursesResponse>("/api/courses?populate=users_permissions_user");
     return response.data.data;
   } catch (error) {
     console.error("Error fetching courses:", error);
+    throw error;
+  }
+}
+
+export async function fetchCourseByDocumentId(documentId: string): Promise<Course> {
+  try {
+    const token = localStorage.getItem("auth_token");
+
+    if (!token) {
+      throw new Error("Токен не найден. Пожалуйста, авторизуйтесь.");
+    }
+
+    const axiosInstance = authentificatedRequest(token);
+    const response = await axiosInstance.get<{ data: Course }>(
+      `/api/courses/${documentId}?populate=users_permissions_user`
+    );
+    return response.data.data;
+  } catch (error) {
+    console.error("Error fetching course:", error);
+    throw error;
+  }
+}
+
+export async function searchCourses(query: string): Promise<Course[]> {
+  try {
+    const token = localStorage.getItem("auth_token");
+
+    if (!token) {
+      throw new Error("Токен не найден. Пожалуйста, авторизуйтесь.");
+    }
+
+    const axiosInstance = authentificatedRequest(token);
+    const encodedQuery = encodeURIComponent(query);
+    const response = await axiosInstance.get<CoursesResponse>(
+      `/api/courses?populate=users_permissions_user&filters[title][$containsi]=${encodedQuery}`
+    );
+    return response.data.data;
+  } catch (error) {
+    console.error("Error searching courses:", error);
     throw error;
   }
 }

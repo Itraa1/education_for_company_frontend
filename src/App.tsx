@@ -69,17 +69,21 @@ function App() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const checkAndNavigate = async () => {
-      const auth = await checkAuth();
+    // const checkAndNavigate = async () => {
+    checkAuth().then(auth => {
+      console.log(auth);
+
       if (!auth) {
         navigate("/auth");
       }
-    };
-    checkAndNavigate();
+    });
+
+
+    // checkAndNavigate();
   }, [navigate]);
 
-  const handleEnrollCourse = (courseId: number) => {
-    alert(`Вы записаны на курс #${courseId}!`);
+  const handleCoursesClick = (documentId: string) => {
+    navigate(`/course/${documentId}`);
   };
 
   return (
@@ -101,7 +105,20 @@ function App() {
               <h2 className="section-title">🎓 Рекомендуемые курсы</h2>
               <div className="courses-grid">
                 {mockCourses.slice(0, 3).map((course) => (
-                  <div key={course.id} className="course-card">
+                  <div 
+                    key={course.id} 
+                    className="course-card"
+                    onClick={() => handleCoursesClick(course.id.toString())}
+                    style={{ cursor: "pointer", transition: "transform 0.2s, box-shadow 0.2s" }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.transform = "translateY(-4px)";
+                      e.currentTarget.style.boxShadow = "0 8px 16px rgba(0, 0, 0, 0.2)";
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.transform = "translateY(0)";
+                      e.currentTarget.style.boxShadow = "";
+                    }}
+                  >
                     <div className="course-card-image">
                       {course.status === "new" && "⭐"}
                       {course.status === "active" && "📚"}
@@ -127,9 +144,12 @@ function App() {
                       </div>
                       <button
                         className="course-card-button"
-                        onClick={() => handleEnrollCourse(course.id)}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleCoursesClick(course.id.toString());
+                        }}
                       >
-                        Записаться
+                        Подробнее →
                       </button>
                     </div>
                   </div>
@@ -142,7 +162,20 @@ function App() {
               <h2 className="section-title">📖 Все курсы</h2>
               <div className="courses-grid">
                 {mockCourses.map((course) => (
-                  <div key={course.id} className="course-card">
+                  <div 
+                    key={course.id} 
+                    className="course-card"
+                    onClick={() => handleCoursesClick(course.id.toString())}
+                    style={{ cursor: "pointer", transition: "transform 0.2s, box-shadow 0.2s" }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.transform = "translateY(-4px)";
+                      e.currentTarget.style.boxShadow = "0 8px 16px rgba(0, 0, 0, 0.2)";
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.transform = "translateY(0)";
+                      e.currentTarget.style.boxShadow = "";
+                    }}
+                  >
                     <div className="course-card-image">
                       {course.status === "new" && "⭐"}
                       {course.status === "active" && "📚"}
@@ -168,9 +201,12 @@ function App() {
                       </div>
                       <button
                         className="course-card-button"
-                        onClick={() => handleEnrollCourse(course.id)}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleCoursesClick(course.id.toString());
+                        }}
                       >
-                        Записаться
+                        Подробнее →
                       </button>
                     </div>
                   </div>

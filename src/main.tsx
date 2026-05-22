@@ -5,6 +5,7 @@ import "./index.css";
 import Auth from "./auth/Auth";
 import App from "./App.tsx";
 import Catalog from "./pages/Catalog";
+import CoursePage from "./pages/CoursePage";
 import ActiveCourses from "./pages/ActiveCourses";
 import CompletedCourses from "./pages/CompletedCourses";
 import CreateCourse from "./pages/CreateCourse";
@@ -17,6 +18,7 @@ createRoot(document.getElementById("root")!).render(
         <Routes>
           <Route path="/" element={<App />} />
           <Route path="/catalog" element={<Catalog />} />
+          <Route path="/course/:documentId" element={<CoursePage />} />
           <Route path="/active" element={<ActiveCourses />} />
           <Route path="/completed" element={<CompletedCourses />} />
           <Route path="/create" element={<CreateCourse />} />
