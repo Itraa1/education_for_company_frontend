@@ -9,17 +9,20 @@ export default function ActiveCourses() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Загружаем записанные курсы
-    const courses = getEnrolledCourses();
-    setEnrolledCourses(courses);
-    setLoading(false);
+    const loadCourses = async () => {
+      const courses = await Promise.resolve(getEnrolledCourses());
+      setEnrolledCourses(courses);
+      setLoading(false);
+    };
+
+    loadCourses();
   }, []);
 
   const handleUnenrollCourse = (courseId: number, courseTitle: string) => {
     if (window.confirm(`Вы уверены, что хотите удалить курс "${courseTitle}" из активных?`)) {
       unenrollCourse(courseId);
       setEnrolledCourses(prev => prev.filter(c => c.id !== courseId));
-      alert(`❌ Вы удалены с курса: ${courseTitle}`);
+      alert(` Вы удалены с курса: ${courseTitle}`);
     }
   };
 

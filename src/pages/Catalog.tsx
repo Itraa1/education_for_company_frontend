@@ -14,7 +14,7 @@ export default function Catalog() {
   const [searchQuery, setSearchQuery] = useState("");
   const debounceTimerRef = useRef<number | null>(null);
 
-  // Загрузка курсов при монтировании компонента
+  
   useEffect(() => {
     const loadCourses = async () => {
       try {
@@ -42,7 +42,7 @@ export default function Catalog() {
     loadCourses();
   }, []);
 
-  // Обработка поиска с дебоунсом
+  
   const handleSearchChange = (value: string) => {
     setSearchQuery(value);
 

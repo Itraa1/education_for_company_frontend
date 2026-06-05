@@ -119,9 +119,9 @@ export default function CoursePage() {
         gap: "2rem",
         marginBottom: "2rem",
       }}>
-        {/* Основное содержание */}
+        
         <div>
-          {/* Видео если есть */}
+          
           {course.youtube_url && (
             <div style={{
               marginBottom: "2rem",

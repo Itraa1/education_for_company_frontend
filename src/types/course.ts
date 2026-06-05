@@ -37,7 +37,7 @@ export interface CourseInput {
   category: CourseCategory;
   level: CourseLevel;
   duration: number;
-  // instructor: string;
+  youtube_url: string;
   content: string;
 }
 

@@ -15,7 +15,7 @@ export default function CreateCourse() {
     category: "programming",
     level: "beginner",
     duration: 1,
-    // instructor: "",
+    youtube_url: "",
     content: "",
   });
 
@@ -128,31 +128,6 @@ export default function CreateCourse() {
           />
         </div>
 
-        {/* URL курса */}
-        {/* <div style={{ marginBottom: "1.5rem" }}>
-          <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: "500" }}>
-             URL курса (автоматически генерируется) *
-          </label>
-          <input
-            type="text"
-            name="slug"
-            value={formData.slug}
-            readOnly
-            style={{
-              width: "100%",
-              padding: "0.75rem",
-              borderRadius: "8px",
-              border: "1px solid var(--border-color)",
-              backgroundColor: "var(--bg-secondary)",
-              color: "var(--text-secondary)",
-              fontSize: "1rem",
-              boxSizing: "border-box",
-              cursor: "not-allowed",
-            }}
-          />
-        </div> */}
-
-        {/* Описание */}
         <div style={{ marginBottom: "1.5rem" }}>
           <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: "500" }}>
              Описание курса (краткое) *
@@ -179,7 +154,7 @@ export default function CreateCourse() {
           />
         </div>
 
-        {/* Текст курса */}
+        
         <div style={{ marginBottom: "1.5rem" }}>
           <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: "500" }}>
              Основной текст курса *
@@ -207,14 +182,14 @@ export default function CreateCourse() {
         </div>
 
         {/* Инструктор */}
-        {/* <div style={{ marginBottom: "1.5rem" }}>
+        <div style={{ marginBottom: "1.5rem" }}>
           <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: "500" }}>
-             Имя Автора *
+             Ссылка на youtube видео
           </label>
           <input
             type="text"
-            name="instructor"
-            value={formData.instructor}
+            name="youtube_url"
+            value={formData.youtube_url}
             onChange={handleChange}
             placeholder="Введите имя инструктора"
             style={{
@@ -227,13 +202,13 @@ export default function CreateCourse() {
               fontSize: "1rem",
               boxSizing: "border-box",
             }}
-            required
+            
           />
-        </div> */}
+        </div>
 
-        {/* Категория и Уровень в одной строке */}
+        
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem", marginBottom: "1.5rem" }}>
-          {/* Категория */}
+          
           <div>
             <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: "500" }}>
               🏷️ Категория *
@@ -259,7 +234,7 @@ export default function CreateCourse() {
             </select>
           </div>
 
-          {/* Уровень */}
+          
           <div>
             <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: "500" }}>
               📊 Уровень *
@@ -286,7 +261,7 @@ export default function CreateCourse() {
           </div>
         </div>
 
-        {/* Продолжительность */}
+        
         <div style={{ marginBottom: "2rem" }}>
           <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: "500" }}>
             ⏱️ Продолжительность (часов) *
@@ -312,7 +287,7 @@ export default function CreateCourse() {
           />
         </div>
 
-        {/* Кнопки */}
+        
         <div style={{ display: "flex", gap: "1rem", justifyContent: "flex-end" }}>
           <button
             type="button"
