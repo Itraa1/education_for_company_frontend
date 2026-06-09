@@ -10,7 +10,7 @@ export async function fetchCourses(): Promise<Course[]> {
     }
 
     const axiosInstance = authentificatedRequest(token);
-    const response = await axiosInstance.get<CoursesResponse>("/api/courses?populate=users_permissions_user");
+    const response = await axiosInstance.get<CoursesResponse>("/api/courses?populate=*");
     return response.data.data;
   } catch (error) {
     console.error("Error fetching courses:", error);
@@ -28,7 +28,7 @@ export async function fetchCourseByDocumentId(documentId: string): Promise<Cours
 
     const axiosInstance = authentificatedRequest(token);
     const response = await axiosInstance.get<{ data: Course }>(
-      `/api/courses/${documentId}?populate=users_permissions_user`
+      `/api/courses/${documentId}?populate=*`
     );
     return response.data.data;
   } catch (error) {
@@ -48,7 +48,7 @@ export async function searchCourses(query: string): Promise<Course[]> {
     const axiosInstance = authentificatedRequest(token);
     const encodedQuery = encodeURIComponent(query);
     const response = await axiosInstance.get<CoursesResponse>(
-      `/api/courses?populate=users_permissions_user&filters[title][$containsi]=${encodedQuery}`
+      `/api/courses?populate=*&filters[title][$containsi]=${encodedQuery}`
     );
     return response.data.data;
   } catch (error) {
@@ -100,16 +100,59 @@ export async function createCourse(courseData: CourseInput) {
     if (!token) {
       throw new Error("Токен не найден. Пожалуйста, авторизуйтесь.");
     }
+
+    const dataToSend = {
+      ...courseData,
+      topics: courseData.topics?.map((topic) => {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { id, ...rest } = topic;
+        return rest;
+      }),
+    };
+
     const axiosInstance = await authentificatedRequest(token);
     const response = await axiosInstance.post(
       "/api/courses",
       {
-        "data": courseData,
+        "data": dataToSend,
       },
     );
+    console.log(response.data);
     return response.data.data;
   } catch (error) {
     console.error("Error creating course:", error);
+    throw error;
+  }
+}
+
+export async function updateCourse(documentId: string, courseData: CourseInput) {
+  try {
+    const token = localStorage.getItem("auth_token");
+
+    if (!token) {
+      throw new Error("Токен не найден. Пожалуйста, авторизуйтесь.");
+    }
+
+    const dataToSend = {
+      ...courseData,
+      topics: courseData.topics?.map((topic) => {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { id, ...rest } = topic;
+        return rest;
+      }),
+    };
+
+    const axiosInstance = await authentificatedRequest(token);
+    const response = await axiosInstance.put(
+      `/api/courses/${documentId}`,
+      {
+        "data": dataToSend,
+      },
+    );
+    console.log(response.data);
+    return response.data.data;
+  } catch (error) {
+    console.error("Error updating course:", error);
     throw error;
   }
 }

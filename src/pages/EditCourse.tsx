@@ -1,14 +1,19 @@
-import { useState } from "react";
-import { useNavigate } from "react-router";
+import { useState, useEffect, useContext } from "react";
+import { useNavigate, useParams } from "react-router";
 import DashboardLayout from "./DashboardLayout";
-import { type CourseInput, type Topic } from "../types/course";
-import { createCourse } from "../controllers/courseService";
+import { type CourseInput, type Topic, type Course } from "../types/course";
+import { updateCourse, fetchCourseByDocumentId } from "../controllers/courseService";
+import { UserContext } from "../components/context/UserContext";
 
-export default function CreateCourse() {
+export default function EditCourse() {
   const navigate = useNavigate();
-  const [loading, setLoading] = useState(false);
+  const { documentId } = useParams();
+  const userContext = useContext(UserContext);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [expandedTopicId, setExpandedTopicId] = useState<string | null>(null);
+  const [course, setCourse] = useState<Course | null>(null);
+  const [submitting, setSubmitting] = useState(false);
 
   const [formData, setFormData] = useState<CourseInput>({
     title: "",
@@ -20,6 +25,52 @@ export default function CreateCourse() {
     content: "",
     topics: [],
   });
+
+  useEffect(() => {
+    const loadCourse = async () => {
+      try {
+        if (!documentId) {
+          throw new Error("ID курса не найден");
+        }
+
+        setLoading(true);
+        setError(null);
+
+        const data = await fetchCourseByDocumentId(documentId);
+        setCourse(data);
+
+        // Проверка доступа: только автор и админ могут редактировать
+        const isAuthor = userContext?.user?.id === data.users_permissions_user?.id;
+        const isAdmin = userContext?.user?.role?.type === "admin";
+
+        if (!isAuthor && !isAdmin) {
+          throw new Error("У вас нет прав для редактирования этого курса");
+        }
+
+        setFormData({
+          title: data.title,
+          description: data.description,
+          category: data.category,
+          level: data.level,
+          duration: data.duration,
+          youtube_url: data.youtube_url || "",
+          content: data.text || "",
+          topics: data.topics || [],
+        });
+
+        if (data.topics && data.topics.length > 0 && data.topics[0].id) {
+          setExpandedTopicId(data.topics[0].id);
+        }
+      } catch (err) {
+        console.error("Failed to load course:", err);
+        setError((err instanceof Error ? err.message : "Не удалось загрузить курс. Попробуйте позже."));
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadCourse();
+  }, [documentId, userContext]);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
@@ -101,23 +152,63 @@ export default function CreateCourse() {
     }
 
     try {
-      setLoading(true);
-      await createCourse(formData);
-      alert("✅ Курс успешно создан!");
-      navigate("/catalog");
+      setSubmitting(true);
+      if (!documentId) {
+        throw new Error("ID курса не найден");
+      }
+      await updateCourse(documentId, formData);
+      alert("✅ Курс успешно обновлён!");
+      navigate(`/course/${documentId}`);
     } catch (err) {
-      console.error("Failed to create course:", err);
-      setError("Не удалось создать курс. Попробуйте позже.");
+      console.error("Failed to update course:", err);
+      setError("Не удалось обновить курс. Попробуйте позже.");
     } finally {
-      setLoading(false);
+      setSubmitting(false);
     }
   };
+
+  if (loading) {
+    return (
+      <DashboardLayout>
+        <div style={{ textAlign: "center", padding: "3rem 0", color: "var(--text-secondary)" }}>
+          <p style={{ fontSize: "1.2rem" }}>⏳ Загрузка курса...</p>
+        </div>
+      </DashboardLayout>
+    );
+  }
+
+  if (error && !course) {
+    return (
+      <DashboardLayout>
+        <div style={{ textAlign: "center", padding: "3rem 0" }}>
+          <p style={{ fontSize: "1.2rem", color: "var(--text-secondary)" }}>
+            ❌ {error}
+          </p>
+          <button
+            onClick={() => navigate("/catalog")}
+            style={{
+              marginTop: "1rem",
+              padding: "0.75rem 1.5rem",
+              backgroundColor: "var(--primary)",
+              color: "white",
+              border: "none",
+              borderRadius: "0.5rem",
+              cursor: "pointer",
+              fontSize: "1rem",
+            }}
+          >
+            Вернуться в каталог
+          </button>
+        </div>
+      </DashboardLayout>
+    );
+  }
 
   return (
     <DashboardLayout>
       <div className="page-header">
-        <h1 className="page-title">Создание нового курса</h1>
-        <p className="page-subtitle">Заполните все поля для создания курса</p>
+        <h1 className="page-title">Редактирование курса</h1>
+        <p className="page-subtitle">Обновите информацию о курсе</p>
       </div>
 
       {error && (
@@ -215,7 +306,7 @@ export default function CreateCourse() {
             name="youtube_url"
             value={formData.youtube_url}
             onChange={handleChange}
-            placeholder="Введите имя инструктора"
+            placeholder="Введите ссылку на видео"
             style={{
               width: "100%",
               padding: "0.75rem",
@@ -285,7 +376,7 @@ export default function CreateCourse() {
           </div>
         </div>
 
-        {/* Продолжительность */}
+        
         <div style={{ marginBottom: "2rem" }}>
           <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: "500" }}>
             ⏱️ Продолжительность (часов) *
@@ -467,7 +558,7 @@ export default function CreateCourse() {
         <div style={{ display: "flex", gap: "1rem", justifyContent: "flex-end" }}>
           <button
             type="button"
-            onClick={() => navigate("/catalog")}
+            onClick={() => navigate(`/course/${documentId}`)}
             style={{
               padding: "0.75rem 1.5rem",
               borderRadius: "8px",
@@ -489,30 +580,30 @@ export default function CreateCourse() {
           </button>
           <button
             type="submit"
-            disabled={loading}
+            disabled={submitting}
             style={{
               padding: "0.75rem 2rem",
               borderRadius: "8px",
               border: "none",
-              backgroundColor: loading ? "#5eff0080" : "#5eff00",
+              backgroundColor: submitting ? "#5eff0080" : "#5eff00",
               color: "#1a1a2e",
               fontSize: "1rem",
               fontWeight: "600",
-              cursor: loading ? "not-allowed" : "pointer",
+              cursor: submitting ? "not-allowed" : "pointer",
               transition: "all 0.3s ease",
             }}
             onMouseEnter={(e) => {
-              if (!loading) {
+              if (!submitting) {
                 (e.target as HTMLButtonElement).style.backgroundColor = "#4de600";
               }
             }}
             onMouseLeave={(e) => {
-              if (!loading) {
+              if (!submitting) {
                 (e.target as HTMLButtonElement).style.backgroundColor = "#5eff00";
               }
             }}
           >
-            {loading ? "Создание..." : "✅ Создать курс"}
+            {submitting ? "Сохранение..." : "✅ Сохранить изменения"}
           </button>
         </div>
       </form>

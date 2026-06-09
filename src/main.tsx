@@ -9,6 +9,7 @@ import CoursePage from "./pages/CoursePage";
 import ActiveCourses from "./pages/ActiveCourses";
 import CompletedCourses from "./pages/CompletedCourses";
 import CreateCourse from "./pages/CreateCourse";
+import EditCourse from "./pages/EditCourse";
 import { UserProvider } from "./components/context/UserProvider.tsx";
 
 createRoot(document.getElementById("root")!).render(
@@ -19,6 +20,7 @@ createRoot(document.getElementById("root")!).render(
           <Route path="/" element={<App />} />
           <Route path="/catalog" element={<Catalog />} />
           <Route path="/course/:documentId" element={<CoursePage />} />
+          <Route path="/course/:documentId/edit" element={<EditCourse />} />
           <Route path="/active" element={<ActiveCourses />} />
           <Route path="/completed" element={<CompletedCourses />} />
           <Route path="/create" element={<CreateCourse />} />

@@ -14,6 +14,12 @@ export interface Users_permissions_user {
   publishedAt: string;
 }
 
+export interface Topic {
+  id?: string;
+  title: string;
+  content: string;
+}
+
 export interface Course {
   id: number;
   documentId: string;
@@ -25,6 +31,7 @@ export interface Course {
   duration: number;
   users_permissions_user: Users_permissions_user;
   text: string;
+  topics?: Topic[];
   youtube_url?: string;
   createdAt: string;
   updatedAt: string;
@@ -39,6 +46,7 @@ export interface CourseInput {
   duration: number;
   youtube_url: string;
   content: string;
+  topics?: Topic[];
 }
 
 export interface CoursesResponse {

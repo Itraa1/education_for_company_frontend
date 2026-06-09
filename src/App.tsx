@@ -1,75 +1,19 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import { checkAuth } from "./controllers/chechAuth";
 import { StyledSideBar } from "./components/menu/styledSideBar";
 import { StyledHeader } from "./components/header/steledHeader";
+import { type Course } from "./types/course";
+import { fetchCourses, getCategoryIcon } from "./controllers/courseService";
 import "./App.css";
-
-interface Course {
-  id: number;
-  title: string;
-  description: string;
-  instructor: string;
-  students: number;
-  status: "active" | "completed" | "new";
-}
-
-const mockCourses: Course[] = [
-  {
-    id: 1,
-    title: "React для начинающих",
-    description: "Полный курс по React с нуля до профессионала",
-    instructor: "Иван Петров",
-    students: 234,
-    status: "active",
-  },
-  {
-    id: 2,
-    title: "TypeScript Advanced",
-    description: "Продвинутые концепции TypeScript и типизация",
-    instructor: "Мария Сидорова",
-    students: 156,
-    status: "active",
-  },
-  {
-    id: 3,
-    title: "Node.js для backend",
-    description: "Создание полнофункциональных серверных приложений",
-    instructor: "Алексей Козлов",
-    students: 189,
-    status: "new",
-  },
-  {
-    id: 4,
-    title: "CSS и современный дизайн",
-    description: "Мастерство CSS3 и создание адаптивных интерфейсов",
-    instructor: "Елена Воронина",
-    students: 312,
-    status: "completed",
-  },
-  {
-    id: 5,
-    title: "REST API разработка",
-    description: "Проектирование и разработка REST API",
-    instructor: "Виктор Смирнов",
-    students: 178,
-    status: "active",
-  },
-  {
-    id: 6,
-    title: "Тестирование приложений",
-    description: "Unit тесты, интеграционные тесты и E2E тестирование",
-    instructor: "Ольга Рыбакова",
-    students: 142,
-    status: "active",
-  },
-];
 
 function App() {
   const navigate = useNavigate();
+  const [courses, setCourses] = useState<Course[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    // const checkAndNavigate = async () => {
     checkAuth().then(auth => {
       console.log(auth);
 
@@ -77,10 +21,32 @@ function App() {
         navigate("/auth");
       }
     });
-
-
-    // checkAndNavigate();
   }, [navigate]);
+
+  useEffect(() => {
+    const loadCourses = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        const data = await fetchCourses();
+        
+        // Сортируем по дате создания (новые первыми)
+        const sortedCourses = [...data].sort((a, b) => {
+          return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+        });
+        
+        setCourses(sortedCourses);
+      } catch (err) {
+        console.error("Failed to load courses:", err);
+        setError("Не удалось загрузить курсы");
+        setCourses([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadCourses();
+  }, []);
 
   const handleCoursesClick = (documentId: string) => {
     navigate(`/course/${documentId}`);
@@ -100,118 +66,130 @@ function App() {
               </p>
             </div>
 
-            {/* Активные курсы */}
+            {/* Новые курсы */}
             <section className="courses-section">
-              <h2 className="section-title">🎓 Рекомендуемые курсы</h2>
-              <div className="courses-grid">
-                {mockCourses.slice(0, 3).map((course) => (
-                  <div 
-                    key={course.id} 
-                    className="course-card"
-                    onClick={() => handleCoursesClick(course.id.toString())}
-                    style={{ cursor: "pointer", transition: "transform 0.2s, box-shadow 0.2s" }}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.transform = "translateY(-4px)";
-                      e.currentTarget.style.boxShadow = "0 8px 16px rgba(0, 0, 0, 0.2)";
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.transform = "translateY(0)";
-                      e.currentTarget.style.boxShadow = "";
-                    }}
-                  >
-                    <div className="course-card-image">
-                      {course.status === "new" && "⭐"}
-                      {course.status === "active" && "📚"}
-                      {course.status === "completed" && "✅"}
-                    </div>
-                    <div className="course-card-body">
-                      <h3 className="course-card-title">{course.title}</h3>
-                      <p className="course-card-description">
-                        {course.description}
-                      </p>
-                      <div className="course-card-meta">
-                        <span>👨‍🏫 {course.instructor}</span>
-                        <span>👥 {course.students} студентов</span>
+              <h2 className="section-title">⭐ Новые курсы</h2>
+              {loading ? (
+                <div style={{ textAlign: "center", padding: "3rem 0", color: "var(--text-secondary)" }}>
+                  <p style={{ fontSize: "1.2rem" }}>⏳ Загрузка курсов...</p>
+                </div>
+              ) : error ? (
+                <div style={{ textAlign: "center", padding: "3rem 0", color: "var(--text-secondary)" }}>
+                  <p style={{ fontSize: "1.2rem" }}>⚠️ {error}</p>
+                </div>
+              ) : courses.length === 0 ? (
+                <div style={{ textAlign: "center", padding: "3rem 0", color: "var(--text-secondary)" }}>
+                  <p style={{ fontSize: "1.2rem" }}>📚 Курсы не найдены</p>
+                </div>
+              ) : (
+                <div className="courses-grid">
+                  {courses.slice(0, 3).map((course) => (
+                    <div
+                      key={course.documentId}
+                      className="course-card"
+                      onClick={() => handleCoursesClick(course.documentId)}
+                      style={{ cursor: "pointer", transition: "transform 0.2s, box-shadow 0.2s" }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.transform = "translateY(-4px)";
+                        e.currentTarget.style.boxShadow = "0 8px 16px rgba(0, 0, 0, 0.2)";
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.transform = "translateY(0)";
+                        e.currentTarget.style.boxShadow = "";
+                      }}
+                    >
+                      <div className="course-card-image">
+                        {getCategoryIcon(course.category)}
                       </div>
-                      <div className="course-card-meta">
-                        <span className="course-card-badge">
-                          {course.status === "new"
-                            ? "Новое"
-                            : course.status === "active"
-                              ? "Идет"
-                              : "Завершено"}
-                        </span>
+                      <div className="course-card-body">
+                        <h3 className="course-card-title">{course.title}</h3>
+                        <p className="course-card-description">
+                          {course.description.substring(0, 100)}...
+                        </p>
+                        <div className="course-card-meta">
+                          <span>👨‍🏫 {course.users_permissions_user?.username}</span>
+                          <span>⏱️ {course.duration} часов</span>
+                        </div>
+                        <div className="course-card-meta">
+                          <span style={{ fontSize: "0.85rem", color: "var(--text-secondary)" }}>
+                            📅 {new Date(course.createdAt).toLocaleDateString("ru-RU")}
+                          </span>
+                        </div>
+                        <button
+                          className="course-card-button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleCoursesClick(course.documentId);
+                          }}
+                        >
+                          Подробнее →
+                        </button>
                       </div>
-                      <button
-                        className="course-card-button"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleCoursesClick(course.id.toString());
-                        }}
-                      >
-                        Подробнее →
-                      </button>
                     </div>
-                  </div>
-                ))}
-              </div>
+                  ))}
+                </div>
+              )}
             </section>
 
             {/* Все курсы */}
             <section className="courses-section">
               <h2 className="section-title">📖 Все курсы</h2>
-              <div className="courses-grid">
-                {mockCourses.map((course) => (
-                  <div 
-                    key={course.id} 
-                    className="course-card"
-                    onClick={() => handleCoursesClick(course.id.toString())}
-                    style={{ cursor: "pointer", transition: "transform 0.2s, box-shadow 0.2s" }}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.transform = "translateY(-4px)";
-                      e.currentTarget.style.boxShadow = "0 8px 16px rgba(0, 0, 0, 0.2)";
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.transform = "translateY(0)";
-                      e.currentTarget.style.boxShadow = "";
-                    }}
-                  >
-                    <div className="course-card-image">
-                      {course.status === "new" && "⭐"}
-                      {course.status === "active" && "📚"}
-                      {course.status === "completed" && "✅"}
-                    </div>
-                    <div className="course-card-body">
-                      <h3 className="course-card-title">{course.title}</h3>
-                      <p className="course-card-description">
-                        {course.description}
-                      </p>
-                      <div className="course-card-meta">
-                        <span>👨‍🏫 {course.instructor}</span>
-                        <span>👥 {course.students}</span>
+              {loading ? (
+                <div style={{ textAlign: "center", padding: "3rem 0", color: "var(--text-secondary)" }}>
+                  <p style={{ fontSize: "1.2rem" }}>⏳ Загрузка курсов...</p>
+                </div>
+              ) : courses.length === 0 ? (
+                <div style={{ textAlign: "center", padding: "3rem 0", color: "var(--text-secondary)" }}>
+                  <p style={{ fontSize: "1.2rem" }}>📚 Курсы не найдены</p>
+                </div>
+              ) : (
+                <div className="courses-grid">
+                  {courses.map((course) => (
+                    <div
+                      key={course.documentId}
+                      className="course-card"
+                      onClick={() => handleCoursesClick(course.documentId)}
+                      style={{ cursor: "pointer", transition: "transform 0.2s, box-shadow 0.2s" }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.transform = "translateY(-4px)";
+                        e.currentTarget.style.boxShadow = "0 8px 16px rgba(0, 0, 0, 0.2)";
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.transform = "translateY(0)";
+                        e.currentTarget.style.boxShadow = "";
+                      }}
+                    >
+                      <div className="course-card-image">
+                        {getCategoryIcon(course.category)}
                       </div>
-                      <div className="course-card-meta">
-                        <span className="course-card-badge">
-                          {course.status === "new"
-                            ? "Новое"
-                            : course.status === "active"
-                              ? "Идет"
-                              : "Завершено"}
-                        </span>
+                      <div className="course-card-body">
+                        <h3 className="course-card-title">{course.title}</h3>
+                        <p className="course-card-description">
+                          {course.description.substring(0, 100)}...
+                        </p>
+                        <div className="course-card-meta">
+                          <span>👨‍🏫 {course.users_permissions_user?.username}</span>
+                          <span>⏱️ {course.duration} часов</span>
+                        </div>
+                        <div className="course-card-meta">
+                          <span style={{ fontSize: "0.85rem", color: "var(--text-secondary)" }}>
+                            📅 {new Date(course.createdAt).toLocaleDateString("ru-RU")}
+                          </span>
+                        </div>
+                        <button
+                          className="course-card-button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleCoursesClick(course.documentId);
+                          }}
+                        >
+                          Подробнее →
+                        </button>
                       </div>
-                      <button
-                        className="course-card-button"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleCoursesClick(course.id.toString());
-                        }}
-                      >
-                        Подробнее →
-                      </button>
                     </div>
-                  </div>
-                ))}
-              </div>
+                  ))}
+                </div>
+              )}
             </section>
           </div>
         </div>

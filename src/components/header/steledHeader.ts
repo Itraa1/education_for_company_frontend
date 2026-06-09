@@ -2,33 +2,6 @@ import styled from "styled-components";
 import ProfileIcon from "../../assets/profileicon.svg?react";
 import Header from "./Header";
 
-const StyledHeaderElement = styled.header`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 1rem 2rem;
-  background-color: var(--bg-secondary);
-  border-bottom: 1px solid var(--border-color);
-  flex-shrink: 0;
-  gap: 1rem;
-
-  h2 {
-    margin: 0;
-    font-size: 1.5rem;
-    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-  }
-
-  @media (max-width: 768px) {
-    padding: 1rem;
-    h2 {
-      font-size: 1.2rem;
-    }
-  }
-`;
-
 export const StyledHeader = styled(Header)`
   display: flex;
   justify-content: space-between;
