@@ -37,12 +37,11 @@ export const StyledProfileIconContainer = styled.div`
   justify-content: center;
   cursor: pointer;
   border-radius: 8px;
-  transition: all 0.3s ease;
+  transition: background-color 0.2s ease;
   background-color: var(--bg-tertiary);
 
   &:hover {
     background-color: var(--bg-hover);
-    transform: scale(1.05);
   }
 `;
 
@@ -63,10 +62,11 @@ export const StyledProfileMenu = styled.div`
   margin-top: 0.5rem;
   background-color: var(--bg-secondary);
   border: 1px solid var(--border-color);
-  border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  min-width: 160px;
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
+  min-width: 260px;
   z-index: 1000;
+  overflow: hidden;
   animation: slideDown 0.2s ease-out;
 
   @keyframes slideDown {
@@ -81,8 +81,54 @@ export const StyledProfileMenu = styled.div`
   }
 `;
 
+export const StyledProfileMenuInfo = styled.div`
+  padding: 1.25rem 1.25rem 1rem;
+  border-bottom: 1px solid var(--border-color);
+`;
+
+export const StyledProfileMenuAvatar = styled.div`
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--bg-dark);
+  margin-bottom: 0.75rem;
+`;
+
+export const StyledProfileMenuName = styled.p`
+  margin: 0 0 0.25rem;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+`;
+
+export const StyledProfileMenuRow = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  margin-top: 0.65rem;
+`;
+
+export const StyledProfileMenuLabel = styled.span`
+  font-size: 0.75rem;
+  color: var(--text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+`;
+
+export const StyledProfileMenuValue = styled.span`
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  word-break: break-word;
+`;
+
 export const StyledProfileMenuItem = styled.div`
-  padding: 0.75rem 1rem;
+  padding: 0.75rem 1.25rem;
   cursor: pointer;
   transition: all 0.2s ease;
   color: var(--text-primary);
@@ -93,18 +139,10 @@ export const StyledProfileMenuItem = styled.div`
 
   &:hover {
     background-color: var(--bg-hover);
-    color: var(--danger-color, #ff6b9d);
+    color: var(--error);
   }
 
   &:active {
     transform: scale(0.98);
-  }
-
-  &:first-child {
-    border-radius: 8px 8px 0 0;
-  }
-
-  &:last-child {
-    border-radius: 0 0 8px 8px;
   }
 `;

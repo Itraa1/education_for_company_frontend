@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import { checkAuth } from "./controllers/chechAuth";
+import { useUser } from "./components/context/UserContext";
 import { StyledSideBar } from "./components/menu/styledSideBar";
 import { StyledHeader } from "./components/header/steledHeader";
 import { type Course } from "./types/course";
@@ -9,19 +10,23 @@ import "./App.css";
 
 function App() {
   const navigate = useNavigate();
+  const { user } = useUser();
   const [courses, setCourses] = useState<Course[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    checkAuth().then(auth => {
-      console.log(auth);
-
-      if (!auth) {
-        navigate("/auth");
-      }
-    });
-  }, [navigate]);
+    const token = localStorage.getItem("auth_token");
+    if (!token) {
+      navigate("/auth");
+      return;
+    }
+    if (!user) {
+      checkAuth().then((auth) => {
+        if (!auth) navigate("/auth");
+      });
+    }
+  }, [user, navigate]);
 
   useEffect(() => {
     const loadCourses = async () => {
@@ -86,17 +91,8 @@ function App() {
                   {courses.slice(0, 3).map((course) => (
                     <div
                       key={course.documentId}
-                      className="course-card"
+                      className="course-card course-card--clickable"
                       onClick={() => handleCoursesClick(course.documentId)}
-                      style={{ cursor: "pointer", transition: "transform 0.2s, box-shadow 0.2s" }}
-                      onMouseEnter={(e) => {
-                        e.currentTarget.style.transform = "translateY(-4px)";
-                        e.currentTarget.style.boxShadow = "0 8px 16px rgba(0, 0, 0, 0.2)";
-                      }}
-                      onMouseLeave={(e) => {
-                        e.currentTarget.style.transform = "translateY(0)";
-                        e.currentTarget.style.boxShadow = "";
-                      }}
                     >
                       <div className="course-card-image">
                         {getCategoryIcon(course.category)}
@@ -147,17 +143,8 @@ function App() {
                   {courses.map((course) => (
                     <div
                       key={course.documentId}
-                      className="course-card"
+                      className="course-card course-card--clickable"
                       onClick={() => handleCoursesClick(course.documentId)}
-                      style={{ cursor: "pointer", transition: "transform 0.2s, box-shadow 0.2s" }}
-                      onMouseEnter={(e) => {
-                        e.currentTarget.style.transform = "translateY(-4px)";
-                        e.currentTarget.style.boxShadow = "0 8px 16px rgba(0, 0, 0, 0.2)";
-                      }}
-                      onMouseLeave={(e) => {
-                        e.currentTarget.style.transform = "translateY(0)";
-                        e.currentTarget.style.boxShadow = "";
-                      }}
                     >
                       <div className="course-card-image">
                         {getCategoryIcon(course.category)}

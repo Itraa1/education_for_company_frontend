@@ -1,89 +1,158 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router";
 import DashboardLayout from "./DashboardLayout";
-import { type Course } from "../types/course";
-import { getEnrolledCourses, unenrollCourse } from "../controllers/enrollService";
+import { type CourseEnrollment } from "../types/enrollment";
+import { calcProgress } from "../types/enrollment";
+import { getEnrollmentsByUser, unenrollCourse } from "../controllers/enrollService";
 import { getCategoryLabel, getLevelLabel, getCategoryIcon } from "../controllers/courseService";
+import { useToast } from "../components/toast/ToastProvider";
+import { useUser } from "../components/context/UserContext";
+import ConfirmDialog from "../components/confirm/ConfirmDialog";
+import ProgressBar from "../components/progress/ProgressBar";
+
+interface PendingUnenroll {
+  documentId: string;
+  courseTitle: string;
+}
 
 export default function ActiveCourses() {
-  const [enrolledCourses, setEnrolledCourses] = useState<Course[]>([]);
+  const navigate = useNavigate();
+  const { user } = useUser();
+  const [enrollments, setEnrollments] = useState<CourseEnrollment[]>([]);
   const [loading, setLoading] = useState(true);
+  const [pendingUnenroll, setPendingUnenroll] = useState<PendingUnenroll | null>(null);
+  const { showToast } = useToast();
 
   useEffect(() => {
+    if (!user) return;
+
     const loadCourses = async () => {
-      const courses = await Promise.resolve(getEnrolledCourses());
-      setEnrolledCourses(courses);
-      setLoading(false);
+      try {
+        setLoading(true);
+        const data = await getEnrollmentsByUser(user.id, "active");
+        setEnrollments(data);
+      } catch (err) {
+        console.error("Failed to load active courses:", err);
+        setEnrollments([]);
+      } finally {
+        setLoading(false);
+      }
     };
 
     loadCourses();
-  }, []);
+  }, [user]);
 
-  const handleUnenrollCourse = (courseId: number, courseTitle: string) => {
-    if (window.confirm(`Вы уверены, что хотите удалить курс "${courseTitle}" из активных?`)) {
-      unenrollCourse(courseId);
-      setEnrolledCourses(prev => prev.filter(c => c.id !== courseId));
-      alert(` Вы удалены с курса: ${courseTitle}`);
+  const handleUnenrollCourse = (documentId: string, courseTitle: string) => {
+    setPendingUnenroll({ documentId, courseTitle });
+  };
+
+  const handleConfirmUnenroll = async () => {
+    if (!pendingUnenroll) return;
+    try {
+      await unenrollCourse(pendingUnenroll.documentId);
+      setEnrollments((prev) =>
+        prev.filter((e) => e.documentId !== pendingUnenroll.documentId)
+      );
+      showToast(`Вы удалены с курса: ${pendingUnenroll.courseTitle}`, "success");
+    } catch (err) {
+      console.error("Failed to unenroll:", err);
+      showToast("Не удалось отписаться от курса.", "error");
+    } finally {
+      setPendingUnenroll(null);
     }
   };
 
-  return (
-    <DashboardLayout>
-      <div className="page-header">
-        <h1 className="page-title">Активные курсы</h1>
-        <p className="page-subtitle">Курсы, в которых вы участвуете в данный момент</p>
-      </div>
+  const handleCancelUnenroll = () => {
+    setPendingUnenroll(null);
+  };
 
-      {loading ? (
-        <div style={{ textAlign: "center", padding: "3rem 0", color: "var(--text-secondary)" }}>
-          <p style={{ fontSize: "1.2rem" }}>⏳ Загрузка...</p>
+  return (
+    <>
+      <ConfirmDialog
+        isOpen={pendingUnenroll !== null}
+        title="Удалить курс из активных?"
+        message={`Вы уверены, что хотите удалить курс «${pendingUnenroll?.courseTitle}» из активных?`}
+        confirmLabel="Удалить"
+        cancelLabel="Отмена"
+        onConfirm={handleConfirmUnenroll}
+        onCancel={handleCancelUnenroll}
+      />
+      <DashboardLayout>
+        <div className="page-header">
+          <h1 className="page-title">Активные курсы</h1>
+          <p className="page-subtitle">Курсы, в которых вы участвуете в данный момент</p>
         </div>
-      ) : enrolledCourses.length === 0 ? (
-        <div style={{ textAlign: "center", padding: "3rem 0", color: "var(--text-secondary)" }}>
-          <p style={{ fontSize: "1.2rem" }}>📚 Вы еще не записаны ни на один курс</p>
-          <p style={{ fontSize: "0.95rem", marginTop: "0.5rem" }}>Перейдите в каталог и выберите курс</p>
-        </div>
-      ) : (
-        <section className="courses-section">
-          <div className="courses-grid">
-            {enrolledCourses.map((course) => (
-              <div key={course.id} className="course-card">
-                <div className="course-card-image">
-                  {getCategoryIcon(course.category)}
-                </div>
-                <div className="course-card-body">
-                  <h3 className="course-card-title">{course.title}</h3>
-                  <p className="course-card-description">
-                    {course.description.substring(0, 150)}...
-                  </p>
-                  <div className="course-card-meta">
-                    <span>👨‍🏫 {course?.users_permissions_user?.username}</span>
-                    <span>⏱️ {course.duration} часов</span>
-                  </div>
-                  <div className="course-card-meta">
-                    <span className="course-card-badge" style={{ backgroundColor: "#5eff00" }}>
-                      {getCategoryLabel(course.category)}
-                    </span>
-                  </div>
-                  <div className="course-card-meta">
-                    <span style={{ fontSize: "0.85rem", color: "var(--text-secondary)" }}>
-                      Уровень: {getLevelLabel(course.level)}
-                    </span>
-                  </div>
-                  <button
-                    className="course-card-button"
-                    onClick={() => handleUnenrollCourse(course.id, course.title)}
-                    style={{
-                      backgroundColor: "#ff6b9d",
-                    }}
-                  >
-                    Удалить курс
-                  </button>
-                </div>
-              </div>
-            ))}
+
+        {loading ? (
+          <div style={{ textAlign: "center", padding: "3rem 0", color: "var(--text-secondary)" }}>
+            <p style={{ fontSize: "1.2rem" }}>⏳ Загрузка...</p>
           </div>
-        </section>
-      )}
-    </DashboardLayout>
+        ) : enrollments.length === 0 ? (
+          <div style={{ textAlign: "center", padding: "3rem 0", color: "var(--text-secondary)" }}>
+            <p style={{ fontSize: "1.2rem" }}>📚 Вы еще не записаны ни на один курс</p>
+            <p style={{ fontSize: "0.95rem", marginTop: "0.5rem" }}>Перейдите в каталог и выберите курс</p>
+          </div>
+        ) : (
+          <section className="courses-section">
+            <div className="courses-grid">
+              {enrollments.map((enrollment) => {
+                const course = enrollment.course;
+                if (!course) return null;
+                const totalTopics = course.topics?.length ?? 0;
+                const progress = calcProgress(enrollment.completed_topics, totalTopics);
+
+                return (
+                  <div
+                    key={enrollment.documentId}
+                    className="course-card"
+                    onClick={() => navigate(`/course/${course.documentId}`)}
+                    style={{ cursor: "pointer" }}
+                  >
+                    <div className="course-card-image">
+                      {getCategoryIcon(course.category)}
+                    </div>
+                    <div className="course-card-body">
+                      <h3 className="course-card-title">{course.title}</h3>
+                      <p className="course-card-description">
+                        {course.description.substring(0, 150)}...
+                      </p>
+                      <div className="course-card-meta">
+                        <span>👨‍🏫 {course.users_permissions_user?.username}</span>
+                        <span>⏱️ {course.duration} часов</span>
+                      </div>
+                      {totalTopics > 0 && (
+                        <div className="course-card-meta" style={{ display: "block", width: "100%" }}>
+                          <ProgressBar completed={progress.completed} total={progress.total} />
+                        </div>
+                      )}
+                      <div className="course-card-meta">
+                        <span className="course-card-badge" style={{ backgroundColor: "#5eff00" }}>
+                          {getCategoryLabel(course.category)}
+                        </span>
+                      </div>
+                      <div className="course-card-meta">
+                        <span style={{ fontSize: "0.85rem", color: "var(--text-secondary)" }}>
+                          Уровень: {getLevelLabel(course.level)}
+                        </span>
+                      </div>
+                      <button
+                        className="course-card-button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleUnenrollCourse(enrollment.documentId, course.title);
+                        }}
+                        style={{ backgroundColor: "#ff6b9d" }}
+                      >
+                        Удалить курс
+                      </button>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </section>
+        )}
+      </DashboardLayout>
+    </>
   );
 }

@@ -6,7 +6,7 @@ type Props = {
   className?: string;
 };
 
-type MenuItemType = "catalog" | "active" | "completed" | "create";
+type MenuItemType = "catalog" | "active" | "completed" | "my-courses" | "create";
 
 export default function SideBar(props: Props) {
   const navigate = useNavigate();
@@ -24,23 +24,29 @@ export default function SideBar(props: Props) {
       { id: "catalog", name: "Каталог курсов", icon: "", path: "/catalog" },
       { id: "active", name: "Активные курсы", icon: "", path: "/active" },
       { id: "completed", name: "Завершенные курсы", icon: "", path: "/completed" },
+      { id: "my-courses", name: "Мои курсы", icon: "", path: "/my-courses" },
       { id: "create", name: "Создать курс", icon: "", path: "/create" },
     ];
 
-  const getActiveMenu = (): MenuItemType => {
+  const getActiveMenu = (): MenuItemType | null => {
     const pathMap: Record<string, MenuItemType> = {
       "/catalog": "catalog",
       "/active": "active",
       "/completed": "completed",
+      "/my-courses": "my-courses",
       "/create": "create",
     };
-    return pathMap[location.pathname] || "catalog";
+    return pathMap[location.pathname] ?? null;
   };
 
   return (
     <div className={props.className}>
       {menuItems.map((item) => {
-        if (item.id === "create" && user?.role.name != "Admin" && user?.role.name != "Author"){
+        if (
+          (item.id === "create" || item.id === "my-courses") &&
+          user?.role.name !== "Admin" &&
+          user?.role.name !== "Author"
+        ) {
           return;
         }
           return (

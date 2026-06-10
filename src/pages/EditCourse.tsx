@@ -4,11 +4,13 @@ import DashboardLayout from "./DashboardLayout";
 import { type CourseInput, type Topic, type Course } from "../types/course";
 import { updateCourse, fetchCourseByDocumentId } from "../controllers/courseService";
 import { UserContext } from "../components/context/UserContext";
+import { useToast } from "../components/toast/ToastProvider";
 
 export default function EditCourse() {
   const navigate = useNavigate();
   const { documentId } = useParams();
   const userContext = useContext(UserContext);
+  const { showToast } = useToast();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [expandedTopicId, setExpandedTopicId] = useState<string | null>(null);
@@ -157,7 +159,7 @@ export default function EditCourse() {
         throw new Error("ID курса не найден");
       }
       await updateCourse(documentId, formData);
-      alert("✅ Курс успешно обновлён!");
+      showToast("Курс успешно обновлён!", "success");
       navigate(`/course/${documentId}`);
     } catch (err) {
       console.error("Failed to update course:", err);

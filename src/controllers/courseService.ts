@@ -37,6 +37,25 @@ export async function fetchCourseByDocumentId(documentId: string): Promise<Cours
   }
 }
 
+export async function fetchCoursesByUser(userId: number): Promise<Course[]> {
+  try {
+    const token = localStorage.getItem("auth_token");
+
+    if (!token) {
+      throw new Error("Токен не найден. Пожалуйста, авторизуйтесь.");
+    }
+
+    const axiosInstance = authentificatedRequest(token);
+    const response = await axiosInstance.get<CoursesResponse>(
+      `/api/courses?populate=*&filters[users_permissions_user][id][$eq]=${userId}`
+    );
+    return response.data.data;
+  } catch (error) {
+    console.error("Error fetching user courses:", error);
+    throw error;
+  }
+}
+
 export async function searchCourses(query: string): Promise<Course[]> {
   try {
     const token = localStorage.getItem("auth_token");

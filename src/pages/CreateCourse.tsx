@@ -3,9 +3,11 @@ import { useNavigate } from "react-router";
 import DashboardLayout from "./DashboardLayout";
 import { type CourseInput, type Topic } from "../types/course";
 import { createCourse } from "../controllers/courseService";
+import { useToast } from "../components/toast/ToastProvider";
 
 export default function CreateCourse() {
   const navigate = useNavigate();
+  const { showToast } = useToast();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [expandedTopicId, setExpandedTopicId] = useState<string | null>(null);
@@ -103,7 +105,7 @@ export default function CreateCourse() {
     try {
       setLoading(true);
       await createCourse(formData);
-      alert("✅ Курс успешно создан!");
+      showToast("Курс успешно создан!", "success");
       navigate("/catalog");
     } catch (err) {
       console.error("Failed to create course:", err);

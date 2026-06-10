@@ -113,10 +113,10 @@ button {
   background-color: var(--primary-color);
   color: var(--bg-dark);
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: background-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-button:hover {
+button:hover:not(:disabled) {
   background-color: var(--primary-dark);
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(94, 255, 0, 0.2);
@@ -140,7 +140,7 @@ input, textarea, select {
   padding: 0.75rem;
   font-family: inherit;
   font-size: 1rem;
-  transition: all 0.3s ease;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 input:focus, textarea:focus, select:focus {

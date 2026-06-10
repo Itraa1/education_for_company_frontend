@@ -3,10 +3,14 @@ import { useNavigate } from "react-router";
 import DashboardLayout from "./DashboardLayout";
 import { type Course } from "../types/course";
 import { fetchCourses, searchCourses, getCategoryLabel, getLevelLabel, getCategoryIcon } from "../controllers/courseService";
-import { enrollCourse, isEnrolled } from "../controllers/enrollService";
+import { enrollCourse, getEnrolledCourseIds } from "../controllers/enrollService";
+import { useToast } from "../components/toast/ToastProvider";
+import { useUser } from "../components/context/UserContext";
 
 export default function Catalog() {
   const navigate = useNavigate();
+  const { showToast } = useToast();
+  const { user } = useUser();
   const [courses, setCourses] = useState<Course[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -14,7 +18,6 @@ export default function Catalog() {
   const [searchQuery, setSearchQuery] = useState("");
   const debounceTimerRef = useRef<number | null>(null);
 
-  
   useEffect(() => {
     const loadCourses = async () => {
       try {
@@ -22,14 +25,6 @@ export default function Catalog() {
         setError(null);
         const data = await fetchCourses();
         setCourses(data);
-        
-        const enrolled = new Set<number>();
-        data.forEach(course => {
-          if (isEnrolled(course.id)) {
-            enrolled.add(course.id);
-          }
-        });
-        setEnrolledIds(enrolled);
       } catch (err) {
         console.error("Failed to load courses:", err);
         setError("Не удалось загрузить курсы. Попробуйте позже.");
@@ -42,7 +37,17 @@ export default function Catalog() {
     loadCourses();
   }, []);
 
-  
+  useEffect(() => {
+    if (!user) return;
+
+    const loadEnrolledIds = async () => {
+      const ids = await getEnrolledCourseIds(user.id);
+      setEnrolledIds(ids);
+    };
+
+    loadEnrolledIds();
+  }, [user]);
+
   const handleSearchChange = (value: string) => {
     setSearchQuery(value);
 
@@ -76,15 +81,17 @@ export default function Catalog() {
     navigate(`/course/${documentId}`);
   };
 
-  const handleEnrollCourse = (e: React.MouseEvent, course: Course) => {
+  const handleEnrollCourse = async (e: React.MouseEvent, course: Course) => {
     e.stopPropagation();
+    if (!user) return;
+
     try {
-      enrollCourse(course);
-      setEnrolledIds(prev => new Set([...prev, course.id]));
-      alert(`✅ Вы записаны на курс: ${course.title}!`);
+      await enrollCourse(course, user.id);
+      setEnrolledIds((prev) => new Set([...prev, course.id]));
+      showToast(`Вы записаны на курс: ${course.title}!`, "success");
     } catch (err) {
       console.error("Failed to enroll course:", err);
-      alert("❌ Не удалось записаться на курс. Попробуйте позже.");
+      showToast("Не удалось записаться на курс. Попробуйте позже.", "error");
     }
   };
 
@@ -95,7 +102,6 @@ export default function Catalog() {
         <p className="page-subtitle">Выберите интересующий вас курс</p>
       </div>
 
-      {/* Поисковая строка */}
       <div style={{ marginBottom: "2rem" }}>
         <input
           type="text"
@@ -113,7 +119,7 @@ export default function Catalog() {
             transition: "border-color 0.3s",
           }}
           onFocus={(e) => {
-            e.currentTarget.style.borderColor = "var(--primary)";
+            e.currentTarget.style.borderColor = "var(--primary-color)";
           }}
           onBlur={(e) => {
             e.currentTarget.style.borderColor = "var(--border-color)";
@@ -139,19 +145,10 @@ export default function Catalog() {
         <section className="courses-section">
           <div className="courses-grid">
             {courses.map((course) => (
-              <div 
-                key={course.documentId} 
-                className="course-card"
+              <div
+                key={course.documentId}
+                className="course-card course-card--clickable"
                 onClick={() => handleCourseClick(course.documentId)}
-                style={{ cursor: "pointer", transition: "transform 0.2s, box-shadow 0.2s" }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.transform = "translateY(-4px)";
-                  e.currentTarget.style.boxShadow = "0 8px 16px rgba(0, 0, 0, 0.2)";
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.transform = "translateY(0)";
-                  e.currentTarget.style.boxShadow = "";
-                }}
               >
                 <div className="course-card-image">
                   {getCategoryIcon(course.category)}

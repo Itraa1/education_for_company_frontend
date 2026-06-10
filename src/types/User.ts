@@ -3,6 +3,7 @@ export interface User {
   confirmed: boolean
   createdAt: string
   documentId: string
+  username: string
   email: string
   id: number
   provider: string
