@@ -1,7 +1,9 @@
 import axios from "axios";
 
+const baseURL = import.meta.env.VITE_API_URL ?? "";
+
 export const publicRequest = axios.create({
-  baseURL: "http://185.167.98.251:1337",
+  baseURL,
   withCredentials: false,
   headers: {
     "Content-Type": "application/json",
@@ -10,7 +12,7 @@ export const publicRequest = axios.create({
 
 export function authentificatedRequest(token: string) {
   return axios.create({
-    baseURL: "http://185.167.98.251:1337",
+    baseURL,
     withCredentials: false,
     headers: {
       "Content-Type": "application/json",
