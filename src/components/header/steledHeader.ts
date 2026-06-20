@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import ProfileIcon from "../../assets/profileicon.svg?react";
+import ProfileIcon from "../../assets/profileIcon.svg?react";
 import Header from "./Header";
 
 export const StyledHeader = styled(Header)`
