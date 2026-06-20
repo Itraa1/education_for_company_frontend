@@ -1,7 +1,7 @@
 import axios from "axios";
 
 export const publicRequest = axios.create({
-  baseURL: "http://localhost:1337",
+  baseURL: "http://185.167.98.251:1337",
   withCredentials: false,
   headers: {
     "Content-Type": "application/json",
@@ -10,7 +10,7 @@ export const publicRequest = axios.create({
 
 export function authentificatedRequest(token: string) {
   return axios.create({
-    baseURL: "http://localhost:1337",
+    baseURL: "http://185.167.98.251:1337",
     withCredentials: false,
     headers: {
       "Content-Type": "application/json",
