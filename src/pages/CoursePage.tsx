@@ -242,7 +242,7 @@ export default function CoursePage() {
       <div className="course-detail__layout">
         <div className="course-detail__main">
           {course.youtube_url && (
-            <div className="course-detail__video">
+            <div className="course-detail__video course-detail__block course-detail__block--video">
               <iframe
                 className="course-detail__video-frame"
                 width="100%"
@@ -256,7 +256,7 @@ export default function CoursePage() {
             </div>
           )}
 
-          <div className="course-detail__section">
+          <div className="course-detail__section course-detail__block course-detail__block--about">
             <h2 className="course-detail__section-title">📚 Об этом курсе</h2>
             <div className="course-detail__info-grid">
               <div>
@@ -287,7 +287,7 @@ export default function CoursePage() {
           </div>
 
           {course.content && (
-            <div className="course-detail__section">
+            <div className="course-detail__section course-detail__block course-detail__block--description">
               <h2 className="course-detail__section-title">📋 Описание</h2>
               <p className="course-detail__text">
                 {course.content}
@@ -296,7 +296,7 @@ export default function CoursePage() {
           )}
 
           {course.topics && course.topics.length > 0 && (
-            <div className="course-detail__section">
+            <div className="course-detail__section course-detail__block course-detail__block--topic">
               <h2 className="course-detail__section-title course-detail__section-title--spaced">
                 📖 {currentTopic ? currentTopic.title : "Темы курса"}
               </h2>
@@ -348,7 +348,7 @@ export default function CoursePage() {
         </div>
 
         <div className="course-detail__sidebar">
-          <div className="course-detail__card">
+          <div className="course-detail__card course-detail__block course-detail__block--actions">
             {isUserEnrolled && totalTopics > 0 && (
               <div className="course-detail__progress">
                 <ProgressBar completed={progress.completed} total={progress.total} />
@@ -405,7 +405,7 @@ export default function CoursePage() {
           </div>
 
           {course.topics && course.topics.length > 0 && (
-            <div className="course-detail__topics">
+            <div className="course-detail__topics course-detail__block course-detail__block--topics-list">
               <h3 className="course-detail__topics-title">
                 📚 Темы ({course.topics.length})
               </h3>
