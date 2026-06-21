@@ -1,6 +1,5 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router";
-import { checkAuth } from "../controllers/chechAuth";
 import { useUser } from "../components/context/UserContext";
 import { StyledSideBar } from "../components/menu/styledSideBar";
 import { StyledHeader } from "../components/header/steledHeader";
@@ -12,21 +11,14 @@ interface DashboardLayoutProps {
 
 export default function DashboardLayout({ children }: DashboardLayoutProps) {
   const navigate = useNavigate();
-  const { user } = useUser();
+  const { user, isInitializing } = useUser();
 
   useEffect(() => {
-    const token = localStorage.getItem("auth_token");
-    if (!token) {
-      navigate("/auth");
-      return;
-    }
-
+    if (isInitializing) return;
     if (!user) {
-      checkAuth().then((auth) => {
-        if (!auth) navigate("/auth");
-      });
+      navigate("/auth");
     }
-  }, [user, navigate]);
+  }, [user, isInitializing, navigate]);
 
   return (
     <div className="app-layout">

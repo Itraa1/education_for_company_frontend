@@ -40,13 +40,13 @@ export default function CompletedCourses() {
       </div>
 
       {loading ? (
-        <div style={{ textAlign: "center", padding: "3rem 0", color: "var(--text-secondary)" }}>
-          <p style={{ fontSize: "1.2rem" }}>⏳ Загрузка...</p>
+        <div className="state">
+          <p className="state__text">⏳ Загрузка...</p>
         </div>
       ) : enrollments.length === 0 ? (
-        <div style={{ textAlign: "center", padding: "3rem 0", color: "var(--text-secondary)" }}>
-          <p style={{ fontSize: "1.2rem" }}>🎓 У вас пока нет завершённых курсов</p>
-          <p style={{ fontSize: "0.95rem", marginTop: "0.5rem" }}>
+        <div className="state">
+          <p className="state__text">🎓 У вас пока нет завершённых курсов</p>
+          <p className="state__hint">
             Изучите все темы курса, чтобы он появился здесь
           </p>
         </div>
@@ -61,9 +61,8 @@ export default function CompletedCourses() {
               return (
                 <div
                   key={enrollment.documentId}
-                  className="course-card"
+                  className="course-card course-card--clickable"
                   onClick={() => navigate(`/course/${course.documentId}`)}
-                  style={{ cursor: "pointer" }}
                 >
                   <div className="course-card-image">
                     {getCategoryIcon(course.category)}
@@ -78,17 +77,17 @@ export default function CompletedCourses() {
                       <span>⏱️ {course.duration} часов</span>
                     </div>
                     {totalTopics > 0 && (
-                      <div className="course-card-meta" style={{ display: "block", width: "100%" }}>
+                      <div className="course-card-meta course-card-meta--block">
                         <ProgressBar completed={totalTopics} total={totalTopics} />
                       </div>
                     )}
                     <div className="course-card-meta">
-                      <span className="course-card-badge" style={{ backgroundColor: "#5eff00" }}>
+                      <span className="course-card-badge">
                         {getCategoryLabel(course.category)}
                       </span>
                     </div>
                     <div className="course-card-meta">
-                      <span style={{ fontSize: "0.85rem", color: "var(--text-secondary)" }}>
+                      <span className="course-card-meta__note">
                         Завершён:{" "}
                         {enrollment.completed_at
                           ? new Date(enrollment.completed_at).toLocaleDateString("ru-RU")

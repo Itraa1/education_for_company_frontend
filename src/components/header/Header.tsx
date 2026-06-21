@@ -13,6 +13,7 @@ import {
   StyledProfileMenuItem,
 } from "./steledHeader";
 import { useUser } from "../context/UserContext";
+import { useMobileMenu } from "../menu/MobileMenuContext";
 import { resetAuthCache } from "../../controllers/chechAuth";
 
 type Props = {
@@ -40,6 +41,7 @@ export default function Header(props: Props) {
   const menuRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
   const { user, logout } = useUser();
+  const { toggle: toggleMobileMenu } = useMobileMenu();
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -63,10 +65,20 @@ export default function Header(props: Props) {
 
   return (
     <header className={props.className}>
+      <button
+        type="button"
+        className="burger"
+        onClick={toggleMobileMenu}
+        aria-label="Открыть меню"
+      >
+        <span className="burger__line" />
+        <span className="burger__line" />
+        <span className="burger__line" />
+      </button>
       <h2 onClick={() => navigate("/")} className="header-title">
         EDUCATION
       </h2>
-      <div ref={menuRef} style={{ position: "relative" }}>
+      <div ref={menuRef} className="profile-menu">
         <StyledProfileIconContainer onClick={() => setIsMenuOpen(!isMenuOpen)}>
           <StyledProfileOcin />
         </StyledProfileIconContainer>

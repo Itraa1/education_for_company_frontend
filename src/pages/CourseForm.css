@@ -1,0 +1,212 @@
+/* Shared course form (create / edit) */
+.course-form {
+  max-width: 800px;
+  margin: 2rem auto;
+}
+
+.course-form__group {
+  margin-bottom: 1.5rem;
+}
+
+.course-form__group--lg {
+  margin-bottom: 2rem;
+}
+
+.course-form__label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+}
+
+.course-form__control {
+  width: 100%;
+  padding: 0.75rem;
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+  background-color: var(--bg-tertiary);
+  color: var(--text-primary);
+  font-size: 1rem;
+  box-sizing: border-box;
+}
+
+.course-form__control--textarea {
+  font-family: inherit;
+  resize: vertical;
+}
+
+.course-form__control--code {
+  font-family: monospace;
+  resize: vertical;
+}
+
+.course-form__row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.course-form__topics {
+  margin-bottom: 2rem;
+  padding: 1.5rem;
+  background-color: var(--bg-tertiary);
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+}
+
+.course-form__topics-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.course-form__topics-title {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.course-form__add-btn {
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  border: none;
+  background-color: var(--primary-color);
+  color: var(--bg-dark);
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.course-form__add-btn:hover {
+  background-color: var(--primary-dark);
+}
+
+.course-form__topics-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.course-form__topic {
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  background-color: var(--bg-secondary);
+  overflow: hidden;
+}
+
+.course-form__topic-head {
+  padding: 1rem;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: background-color 0.2s;
+}
+
+.course-form__topic-head:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+.course-form__topic-name {
+  font-weight: 500;
+}
+
+.course-form__topic-toggle {
+  font-size: 1.2rem;
+}
+
+.course-form__topic-body {
+  padding: 1rem;
+  border-top: 1px solid var(--border-color);
+}
+
+.course-form__field {
+  margin-bottom: 1rem;
+}
+
+.course-form__field-label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.course-form__field-control {
+  width: 100%;
+  padding: 0.75rem;
+  border-radius: 6px;
+  border: 1px solid var(--border-color);
+  background-color: var(--bg-secondary);
+  color: var(--text-primary);
+  font-size: 0.95rem;
+  box-sizing: border-box;
+}
+
+.course-form__field-control--code {
+  font-family: monospace;
+  resize: vertical;
+}
+
+.course-form__remove-btn {
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  border: none;
+  background-color: var(--error);
+  color: #ffffff;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.course-form__remove-btn:hover {
+  background-color: #ff5252;
+}
+
+.course-form__empty {
+  color: var(--text-secondary);
+  text-align: center;
+  margin: 1rem 0;
+}
+
+.course-form__actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: flex-end;
+}
+
+.course-form__cancel-btn {
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+  background-color: var(--bg-tertiary);
+  color: var(--text-primary);
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.course-form__cancel-btn:hover {
+  background-color: var(--bg-hover);
+}
+
+.course-form__submit-btn {
+  padding: 0.75rem 2rem;
+  border-radius: 8px;
+  border: none;
+  background-color: var(--primary-color);
+  color: var(--bg-dark);
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.course-form__submit-btn:hover:not(:disabled) {
+  background-color: var(--primary-dark);
+}
+
+.course-form__submit-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}

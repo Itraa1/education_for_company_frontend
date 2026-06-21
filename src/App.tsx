@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
-import { checkAuth } from "./controllers/chechAuth";
 import { useUser } from "./components/context/UserContext";
 import { StyledSideBar } from "./components/menu/styledSideBar";
 import { StyledHeader } from "./components/header/steledHeader";
@@ -10,23 +9,17 @@ import "./App.css";
 
 function App() {
   const navigate = useNavigate();
-  const { user } = useUser();
+  const { user, isInitializing } = useUser();
   const [courses, setCourses] = useState<Course[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const token = localStorage.getItem("auth_token");
-    if (!token) {
-      navigate("/auth");
-      return;
-    }
+    if (isInitializing) return;
     if (!user) {
-      checkAuth().then((auth) => {
-        if (!auth) navigate("/auth");
-      });
+      navigate("/auth");
     }
-  }, [user, navigate]);
+  }, [user, isInitializing, navigate]);
 
   useEffect(() => {
     const loadCourses = async () => {
@@ -75,16 +68,16 @@ function App() {
             <section className="courses-section">
               <h2 className="section-title">⭐ Новые курсы</h2>
               {loading ? (
-                <div style={{ textAlign: "center", padding: "3rem 0", color: "var(--text-secondary)" }}>
-                  <p style={{ fontSize: "1.2rem" }}>⏳ Загрузка курсов...</p>
+                <div className="state">
+                  <p className="state__text">⏳ Загрузка курсов...</p>
                 </div>
               ) : error ? (
-                <div style={{ textAlign: "center", padding: "3rem 0", color: "var(--text-secondary)" }}>
-                  <p style={{ fontSize: "1.2rem" }}>⚠️ {error}</p>
+                <div className="state">
+                  <p className="state__text">⚠️ {error}</p>
                 </div>
               ) : courses.length === 0 ? (
-                <div style={{ textAlign: "center", padding: "3rem 0", color: "var(--text-secondary)" }}>
-                  <p style={{ fontSize: "1.2rem" }}>📚 Курсы не найдены</p>
+                <div className="state">
+                  <p className="state__text">📚 Курсы не найдены</p>
                 </div>
               ) : (
                 <div className="courses-grid">
@@ -107,7 +100,7 @@ function App() {
                           <span>⏱️ {course.duration} часов</span>
                         </div>
                         <div className="course-card-meta">
-                          <span style={{ fontSize: "0.85rem", color: "var(--text-secondary)" }}>
+                          <span className="course-card-meta__note">
                             📅 {new Date(course.createdAt).toLocaleDateString("ru-RU")}
                           </span>
                         </div>
@@ -131,12 +124,12 @@ function App() {
             <section className="courses-section">
               <h2 className="section-title">📖 Все курсы</h2>
               {loading ? (
-                <div style={{ textAlign: "center", padding: "3rem 0", color: "var(--text-secondary)" }}>
-                  <p style={{ fontSize: "1.2rem" }}>⏳ Загрузка курсов...</p>
+                <div className="state">
+                  <p className="state__text">⏳ Загрузка курсов...</p>
                 </div>
               ) : courses.length === 0 ? (
-                <div style={{ textAlign: "center", padding: "3rem 0", color: "var(--text-secondary)" }}>
-                  <p style={{ fontSize: "1.2rem" }}>📚 Курсы не найдены</p>
+                <div className="state">
+                  <p className="state__text">📚 Курсы не найдены</p>
                 </div>
               ) : (
                 <div className="courses-grid">
@@ -159,7 +152,7 @@ function App() {
                           <span>⏱️ {course.duration} часов</span>
                         </div>
                         <div className="course-card-meta">
-                          <span style={{ fontSize: "0.85rem", color: "var(--text-secondary)" }}>
+                          <span className="course-card-meta__note">
                             📅 {new Date(course.createdAt).toLocaleDateString("ru-RU")}
                           </span>
                         </div>

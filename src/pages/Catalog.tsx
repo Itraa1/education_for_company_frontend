@@ -102,28 +102,13 @@ export default function Catalog() {
         <p className="page-subtitle">Выберите интересующий вас курс</p>
       </div>
 
-      <div style={{ marginBottom: "2rem" }}>
+      <div className="catalog-search">
         <input
           type="text"
+          className="catalog-search__input"
           placeholder="🔍 Поиск курсов по названию..."
           value={searchQuery}
           onChange={(e) => handleSearchChange(e.target.value)}
-          style={{
-            width: "100%",
-            padding: "0.75rem 1rem",
-            fontSize: "1rem",
-            border: "2px solid var(--border-color)",
-            borderRadius: "0.5rem",
-            backgroundColor: "var(--bg-secondary)",
-            color: "var(--text-primary)",
-            transition: "border-color 0.3s",
-          }}
-          onFocus={(e) => {
-            e.currentTarget.style.borderColor = "var(--primary-color)";
-          }}
-          onBlur={(e) => {
-            e.currentTarget.style.borderColor = "var(--border-color)";
-          }}
         />
       </div>
 
@@ -134,12 +119,12 @@ export default function Catalog() {
       )}
 
       {loading ? (
-        <div style={{ textAlign: "center", padding: "3rem 0", color: "var(--text-secondary)" }}>
-          <p style={{ fontSize: "1.2rem" }}>⏳ Загрузка курсов...</p>
+        <div className="state">
+          <p className="state__text">⏳ Загрузка курсов...</p>
         </div>
       ) : courses.length === 0 ? (
-        <div style={{ textAlign: "center", padding: "3rem 0", color: "var(--text-secondary)" }}>
-          <p style={{ fontSize: "1.2rem" }}>📚 Курсы не найдены</p>
+        <div className="state">
+          <p className="state__text">📚 Курсы не найдены</p>
         </div>
       ) : (
         <section className="courses-section">
@@ -163,12 +148,12 @@ export default function Catalog() {
                     <span>⏱️ {course.duration} часов</span>
                   </div>
                   <div className="course-card-meta">
-                    <span className="course-card-badge" style={{ backgroundColor: "#5eff00" }}>
+                    <span className="course-card-badge">
                       {getCategoryLabel(course.category)}
                     </span>
                   </div>
                   <div className="course-card-meta">
-                    <span style={{ fontSize: "0.85rem", color: "var(--text-secondary)" }}>
+                    <span className="course-card-meta__note">
                       Уровень: {getLevelLabel(course.level)}
                     </span>
                   </div>
@@ -176,10 +161,6 @@ export default function Catalog() {
                     className="course-card-button"
                     onClick={(e) => handleEnrollCourse(e, course)}
                     disabled={enrolledIds.has(course.id)}
-                    style={{
-                      opacity: enrolledIds.has(course.id) ? 0.6 : 1,
-                      cursor: enrolledIds.has(course.id) ? "not-allowed" : "pointer",
-                    }}
                   >
                     {enrolledIds.has(course.id) ? "✅ Записан" : "Записаться"}
                   </button>

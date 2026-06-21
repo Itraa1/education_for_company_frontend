@@ -21,6 +21,7 @@
 
 .progress-bar__fill {
   height: 100%;
+  width: var(--progress-bar-value, 0%);
   background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
   border-radius: 4px;
   transition: width 0.4s ease;

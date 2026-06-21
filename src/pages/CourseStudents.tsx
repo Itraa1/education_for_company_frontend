@@ -71,18 +71,10 @@ export default function CourseStudents() {
 
   return (
     <DashboardLayout>
-      <div style={{ marginBottom: "2rem" }}>
+      <div className="page-toolbar">
         <button
+          className="btn-back"
           onClick={() => navigate("/my-courses")}
-          style={{
-            padding: "0.5rem 1rem",
-            backgroundColor: "transparent",
-            color: "var(--primary-color)",
-            border: "1px solid var(--primary-color)",
-            borderRadius: "0.5rem",
-            cursor: "pointer",
-            fontSize: "0.9rem",
-          }}
         >
           ← Назад к моим курсам
         </button>
@@ -98,12 +90,12 @@ export default function CourseStudents() {
       {error && <div className="error-message">⚠️ {error}</div>}
 
       {loading ? (
-        <div style={{ textAlign: "center", padding: "3rem 0", color: "var(--text-secondary)" }}>
-          <p style={{ fontSize: "1.2rem" }}>⏳ Загрузка...</p>
+        <div className="state">
+          <p className="state__text">⏳ Загрузка...</p>
         </div>
       ) : enrollments.length === 0 ? (
-        <div style={{ textAlign: "center", padding: "3rem 0", color: "var(--text-secondary)" }}>
-          <p style={{ fontSize: "1.2rem" }}>👥 Пока никто не записан на этот курс</p>
+        <div className="state">
+          <p className="state__text">👥 Пока никто не записан на этот курс</p>
         </div>
       ) : (
         <div className="students-table-wrapper">

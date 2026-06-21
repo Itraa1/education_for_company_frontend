@@ -3,6 +3,7 @@ import { type User } from "../../types/User";
 
 interface UserContextType {
     user: User | null;
+    isInitializing: boolean;
     login: (userData: User) => void;
     logout: () => void;
 }
