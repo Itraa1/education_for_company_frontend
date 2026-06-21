@@ -107,9 +107,7 @@ export default function SignIn() {
         {isSubmiting ? "⏳ Вход..." : "Войти"}
       </button>
 
-      <div className="auth-footer">
-        Забыли пароль? <a href="#">Восстановить</a>
-      </div>
+      
     </form>
   );
 }

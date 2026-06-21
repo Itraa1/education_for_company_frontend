@@ -282,3 +282,137 @@
 .header-title:hover {
   cursor: pointer;
 }
+
+/* Profile menu anchor (Header) */
+.profile-menu {
+  position: relative;
+}
+
+/* Burger button (mobile only) */
+.burger {
+  display: none;
+}
+
+.burger__line {
+  display: block;
+  width: 20px;
+  height: 2px;
+  margin: 0 auto;
+  background-color: var(--text-primary);
+  border-radius: 2px;
+}
+
+/* Sidebar backdrop (mobile drawer) */
+.sidebar-backdrop {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .burger {
+    display: inline-flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 4px;
+    width: 40px;
+    height: 40px;
+    padding: 0;
+    flex-shrink: 0;
+    background-color: var(--bg-tertiary);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    cursor: pointer;
+  }
+
+  .burger:hover:not(:disabled) {
+    background-color: var(--bg-hover);
+    transform: none;
+    box-shadow: none;
+  }
+
+  .sidebar-backdrop {
+    display: block;
+    position: fixed;
+    inset: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 1090;
+  }
+}
+
+/* Generic state message (loading / empty / error) */
+.state {
+  text-align: center;
+  padding: 3rem 0;
+  color: var(--text-secondary);
+}
+
+.state__text {
+  font-size: 1.2rem;
+}
+
+.state__hint {
+  font-size: 0.95rem;
+  margin-top: 0.5rem;
+}
+
+.state__action {
+  margin-top: 1.5rem;
+}
+
+/* Page toolbar (back button row, search row) */
+.page-toolbar {
+  margin-bottom: 2rem;
+}
+
+.page-title--inline {
+  margin: 0;
+}
+
+/* Back button */
+.btn-back {
+  padding: 0.5rem 1rem;
+  background-color: transparent;
+  color: var(--primary-color);
+  border: 1px solid var(--primary-color);
+  border-radius: 0.5rem;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+/* Catalog search */
+.catalog-search {
+  margin-bottom: 2rem;
+}
+
+.catalog-search__input {
+  width: 100%;
+}
+
+/* Course card helpers */
+.course-card-meta--block {
+  display: block;
+  width: 100%;
+}
+
+.course-card-meta__note {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+
+.course-card-button--danger {
+  background-color: var(--accent-color);
+}
+
+.course-card-button--danger:hover:not(:disabled) {
+  background-color: #e85a8a;
+}
+
+.course-card-button--outline {
+  margin-top: 0.5rem;
+  background-color: transparent;
+  color: var(--secondary-color);
+  border: 1px solid var(--secondary-color);
+}
+
+.course-card-button--outline:hover:not(:disabled) {
+  background-color: rgba(0, 212, 255, 0.1);
+}

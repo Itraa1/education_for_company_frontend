@@ -65,11 +65,25 @@ export const StyledSideBar = styled(SideBar)`
   }
 
   @media (max-width: 768px) {
-    width: 180px;
-    padding: 0.5rem 0;
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    height: 100dvh;
+    width: 260px;
+    padding: 1rem 0;
+    z-index: 1100;
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
+    box-shadow: 4px 0 24px rgba(0, 0, 0, 0.45);
+
+    &.sidebar--open {
+      transform: translateX(0);
+    }
   }
 
   @media (max-width: 480px) {
-    width: 150px;
+    width: 80vw;
+    max-width: 300px;
   }
 `;

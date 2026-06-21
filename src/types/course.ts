@@ -30,7 +30,7 @@ export interface Course {
   level: CourseLevel;
   duration: number;
   users_permissions_user: Users_permissions_user;
-  text: string;
+  content: string;
   topics?: Topic[];
   youtube_url?: string;
   createdAt: string;

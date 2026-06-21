@@ -5,6 +5,7 @@ import { type CourseInput, type Topic, type Course } from "../types/course";
 import { updateCourse, fetchCourseByDocumentId } from "../controllers/courseService";
 import { UserContext } from "../components/context/UserContext";
 import { useToast } from "../components/toast/ToastProvider";
+import "./CourseForm.css";
 
 export default function EditCourse() {
   const navigate = useNavigate();
@@ -56,7 +57,7 @@ export default function EditCourse() {
           level: data.level,
           duration: data.duration,
           youtube_url: data.youtube_url || "",
-          content: data.text || "",
+          content: data.content || "",
           topics: data.topics || [],
         });
 
@@ -172,8 +173,8 @@ export default function EditCourse() {
   if (loading) {
     return (
       <DashboardLayout>
-        <div style={{ textAlign: "center", padding: "3rem 0", color: "var(--text-secondary)" }}>
-          <p style={{ fontSize: "1.2rem" }}>⏳ Загрузка курса...</p>
+        <div className="state">
+          <p className="state__text">⏳ Загрузка курса...</p>
         </div>
       </DashboardLayout>
     );
@@ -182,22 +183,13 @@ export default function EditCourse() {
   if (error && !course) {
     return (
       <DashboardLayout>
-        <div style={{ textAlign: "center", padding: "3rem 0" }}>
-          <p style={{ fontSize: "1.2rem", color: "var(--text-secondary)" }}>
+        <div className="state">
+          <p className="state__text">
             ❌ {error}
           </p>
           <button
+            className="state__action"
             onClick={() => navigate("/catalog")}
-            style={{
-              marginTop: "1rem",
-              padding: "0.75rem 1.5rem",
-              backgroundColor: "var(--primary)",
-              color: "white",
-              border: "none",
-              borderRadius: "0.5rem",
-              cursor: "pointer",
-              fontSize: "1rem",
-            }}
           >
             Вернуться в каталог
           </button>
@@ -219,131 +211,78 @@ export default function EditCourse() {
         </div>
       )}
 
-      <form onSubmit={handleSubmit} style={{ maxWidth: "800px", margin: "2rem auto" }}>
+      <form onSubmit={handleSubmit} className="course-form">
         {/* Название */}
-        <div style={{ marginBottom: "1.5rem" }}>
-          <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: "500" }}>
+        <div className="course-form__group">
+          <label className="course-form__label">
             📝 Название курса *
           </label>
           <input
             type="text"
             name="title"
+            className="course-form__control"
             value={formData.title}
             onChange={handleTitleChange}
             placeholder="Введите название курса"
-            style={{
-              width: "100%",
-              padding: "0.75rem",
-              borderRadius: "8px",
-              border: "1px solid var(--border-color)",
-              backgroundColor: "var(--bg-tertiary)",
-              color: "var(--text-primary)",
-              fontSize: "1rem",
-              boxSizing: "border-box",
-            }}
             required
           />
         </div>
 
-        <div style={{ marginBottom: "1.5rem" }}>
-          <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: "500" }}>
+        <div className="course-form__group">
+          <label className="course-form__label">
              Описание курса (краткое) *
           </label>
           <textarea
             name="description"
+            className="course-form__control course-form__control--textarea"
             value={formData.description}
             onChange={handleChange}
             placeholder="Введите краткое описание курса"
             rows={3}
-            style={{
-              width: "100%",
-              padding: "0.75rem",
-              borderRadius: "8px",
-              border: "1px solid var(--border-color)",
-              backgroundColor: "var(--bg-tertiary)",
-              color: "var(--text-primary)",
-              fontSize: "1rem",
-              boxSizing: "border-box",
-              fontFamily: "inherit",
-              resize: "vertical",
-            }}
             required
           />
         </div>
 
-        
-        <div style={{ marginBottom: "1.5rem" }}>
-          <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: "500" }}>
+        <div className="course-form__group">
+          <label className="course-form__label">
              Основной текст курса *
           </label>
           <textarea
             name="content"
+            className="course-form__control course-form__control--code"
             value={formData.content}
             onChange={handleChange}
             placeholder="Введите основной текст курса (может содержать markdown)"
             rows={6}
-            style={{
-              width: "100%",
-              padding: "0.75rem",
-              borderRadius: "8px",
-              border: "1px solid var(--border-color)",
-              backgroundColor: "var(--bg-tertiary)",
-              color: "var(--text-primary)",
-              fontSize: "1rem",
-              boxSizing: "border-box",
-              fontFamily: "monospace",
-              resize: "vertical",
-            }}
             required
           />
         </div>
 
         {/* Инструктор */}
-        <div style={{ marginBottom: "1.5rem" }}>
-          <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: "500" }}>
+        <div className="course-form__group">
+          <label className="course-form__label">
              Ссылка на youtube видео
           </label>
           <input
             type="text"
             name="youtube_url"
+            className="course-form__control"
             value={formData.youtube_url}
             onChange={handleChange}
             placeholder="Введите ссылку на видео"
-            style={{
-              width: "100%",
-              padding: "0.75rem",
-              borderRadius: "8px",
-              border: "1px solid var(--border-color)",
-              backgroundColor: "var(--bg-tertiary)",
-              color: "var(--text-primary)",
-              fontSize: "1rem",
-              boxSizing: "border-box",
-            }}
-            
           />
         </div>
 
-        
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem", marginBottom: "1.5rem" }}>
-          
+        <div className="course-form__row">
           <div>
-            <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: "500" }}>
+            <label className="course-form__label">
               🏷️ Категория *
             </label>
             <select
               name="category"
+              className="course-form__control"
               value={formData.category}
               onChange={handleChange}
-              style={{
-                width: "100%",
-                padding: "0.75rem",
-                borderRadius: "8px",
-                border: "1px solid var(--border-color)",
-                backgroundColor: "var(--bg-tertiary)",
-                color: "var(--text-primary)",
-                fontSize: "1rem",
-                boxSizing: "border-box",
-              }}
             >
               <option value="programming"> Программирование</option>
               <option value="design"> Дизайн</option>
@@ -351,25 +290,15 @@ export default function EditCourse() {
             </select>
           </div>
 
-          
           <div>
-            <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: "500" }}>
+            <label className="course-form__label">
               📊 Уровень *
             </label>
             <select
               name="level"
+              className="course-form__control"
               value={formData.level}
               onChange={handleChange}
-              style={{
-                width: "100%",
-                padding: "0.75rem",
-                borderRadius: "8px",
-                border: "1px solid var(--border-color)",
-                backgroundColor: "var(--bg-tertiary)",
-                color: "var(--text-primary)",
-                fontSize: "1rem",
-                boxSizing: "border-box",
-              }}
             >
               <option value="beginner">Начинающий</option>
               <option value="intermediate">Продвинутый</option>
@@ -378,169 +307,91 @@ export default function EditCourse() {
           </div>
         </div>
 
-        
-        <div style={{ marginBottom: "2rem" }}>
-          <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: "500" }}>
+        <div className="course-form__group course-form__group--lg">
+          <label className="course-form__label">
             ⏱️ Продолжительность (часов) *
           </label>
           <input
             type="number"
             name="duration"
+            className="course-form__control"
             value={formData.duration}
             onChange={handleChange}
             min="1"
             max="1000"
-            style={{
-              width: "100%",
-              padding: "0.75rem",
-              borderRadius: "8px",
-              border: "1px solid var(--border-color)",
-              backgroundColor: "var(--bg-tertiary)",
-              color: "var(--text-primary)",
-              fontSize: "1rem",
-              boxSizing: "border-box",
-            }}
             required
           />
         </div>
 
         {/* Темы курса */}
-        <div style={{ marginBottom: "2rem", padding: "1.5rem", backgroundColor: "var(--bg-tertiary)", borderRadius: "8px", border: "1px solid var(--border-color)" }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1rem" }}>
-            <h3 style={{ margin: 0, fontSize: "1.1rem", fontWeight: "600" }}>📚 Темы курса</h3>
+        <div className="course-form__topics">
+          <div className="course-form__topics-head">
+            <h3 className="course-form__topics-title">📚 Темы курса</h3>
             <button
               type="button"
+              className="course-form__add-btn"
               onClick={addTopic}
-              style={{
-                padding: "0.5rem 1rem",
-                borderRadius: "6px",
-                border: "none",
-                backgroundColor: "#5eff00",
-                color: "#1a1a2e",
-                fontWeight: "600",
-                cursor: "pointer",
-                transition: "background-color 0.2s",
-              }}
-              onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "#4de600")}
-              onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "#5eff00")}
             >
               + Добавить тему
             </button>
           </div>
 
           {formData.topics && formData.topics.length > 0 ? (
-            <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
+            <div className="course-form__topics-list">
               {formData.topics.map((topic, index) => (
-                <div
-                  key={topic.id}
-                  style={{
-                    border: "1px solid var(--border-color)",
-                    borderRadius: "6px",
-                    backgroundColor: "var(--bg-secondary)",
-                    overflow: "hidden",
-                  }}
-                >
+                <div key={topic.id} className="course-form__topic">
                   <div
+                    className="course-form__topic-head"
                     onClick={() =>
                       setExpandedTopicId(
                         expandedTopicId === topic.id ? null : (topic.id || null)
                       )
                     }
-                    style={{
-                      padding: "1rem",
-                      cursor: "pointer",
-                      display: "flex",
-                      justifyContent: "space-between",
-                      alignItems: "center",
-                      transition: "background-color 0.2s",
-                    }}
-                    onMouseEnter={(e) => {
-                      (e.currentTarget as HTMLElement).style.backgroundColor =
-                        "rgba(255, 255, 255, 0.05)";
-                    }}
-                    onMouseLeave={(e) => {
-                      (e.currentTarget as HTMLElement).style.backgroundColor = "transparent";
-                    }}
                   >
-                    <span style={{ fontWeight: "500" }}>
+                    <span className="course-form__topic-name">
                       {topic.title || `Тема ${index + 1}`}
                     </span>
-                    <span style={{ fontSize: "1.2rem" }}>
+                    <span className="course-form__topic-toggle">
                       {expandedTopicId === topic.id ? "▼" : "▶"}
                     </span>
                   </div>
 
                   {expandedTopicId === topic.id && (
-                    <div style={{ padding: "1rem", borderTop: "1px solid var(--border-color)" }}>
-                      <div style={{ marginBottom: "1rem" }}>
-                        <label style={{ display: "block", marginBottom: "0.5rem", fontSize: "0.9rem", fontWeight: "500" }}>
+                    <div className="course-form__topic-body">
+                      <div className="course-form__field">
+                        <label className="course-form__field-label">
                           Название темы *
                         </label>
                         <input
                           type="text"
+                          className="course-form__field-control"
                           value={topic.title}
                           onChange={(e) =>
                             updateTopic(topic.id, "title", e.target.value)
                           }
                           placeholder="Введите название темы"
-                          style={{
-                            width: "100%",
-                            padding: "0.75rem",
-                            borderRadius: "6px",
-                            border: "1px solid var(--border-color)",
-                            backgroundColor: "var(--bg-secondary)",
-                            color: "var(--text-primary)",
-                            fontSize: "0.95rem",
-                            boxSizing: "border-box",
-                          }}
                         />
                       </div>
 
-                      <div style={{ marginBottom: "1rem" }}>
-                        <label style={{ display: "block", marginBottom: "0.5rem", fontSize: "0.9rem", fontWeight: "500" }}>
+                      <div className="course-form__field">
+                        <label className="course-form__field-label">
                           Текст темы *
                         </label>
                         <textarea
+                          className="course-form__field-control course-form__field-control--code"
                           value={topic.content}
                           onChange={(e) =>
                             updateTopic(topic.id, "content", e.target.value)
                           }
                           placeholder="Введите текст для этой темы"
                           rows={5}
-                          style={{
-                            width: "100%",
-                            padding: "0.75rem",
-                            borderRadius: "6px",
-                            border: "1px solid var(--border-color)",
-                            backgroundColor: "var(--bg-secondary)",
-                            color: "var(--text-primary)",
-                            fontSize: "0.95rem",
-                            boxSizing: "border-box",
-                            fontFamily: "monospace",
-                            resize: "vertical",
-                          }}
                         />
                       </div>
 
                       <button
                         type="button"
+                        className="course-form__remove-btn"
                         onClick={() => removeTopic(topic.id)}
-                        style={{
-                          padding: "0.5rem 1rem",
-                          borderRadius: "6px",
-                          border: "none",
-                          backgroundColor: "#ff6b6b",
-                          color: "white",
-                          fontWeight: "500",
-                          cursor: "pointer",
-                          transition: "background-color 0.2s",
-                        }}
-                        onMouseEnter={(e) =>
-                          (e.currentTarget.style.backgroundColor = "#ff5252")
-                        }
-                        onMouseLeave={(e) =>
-                          (e.currentTarget.style.backgroundColor = "#ff6b6b")
-                        }
                       >
                         🗑️ Удалить тему
                       </button>
@@ -550,60 +401,24 @@ export default function EditCourse() {
               ))}
             </div>
           ) : (
-            <p style={{ color: "var(--text-secondary)", textAlign: "center", margin: "1rem 0" }}>
+            <p className="course-form__empty">
               Пока нет тем. Нажмите кнопку выше, чтобы добавить первую тему.
             </p>
           )}
         </div>
 
-        
-        <div style={{ display: "flex", gap: "1rem", justifyContent: "flex-end" }}>
+        <div className="course-form__actions">
           <button
             type="button"
+            className="course-form__cancel-btn"
             onClick={() => navigate(`/course/${documentId}`)}
-            style={{
-              padding: "0.75rem 1.5rem",
-              borderRadius: "8px",
-              border: "1px solid var(--border-color)",
-              backgroundColor: "var(--bg-tertiary)",
-              color: "var(--text-primary)",
-              fontSize: "1rem",
-              cursor: "pointer",
-              transition: "all 0.3s ease",
-            }}
-            onMouseEnter={(e) => {
-              (e.target as HTMLButtonElement).style.backgroundColor = "var(--bg-hover)";
-            }}
-            onMouseLeave={(e) => {
-              (e.target as HTMLButtonElement).style.backgroundColor = "var(--bg-tertiary)";
-            }}
           >
             Отмена
           </button>
           <button
             type="submit"
+            className="course-form__submit-btn"
             disabled={submitting}
-            style={{
-              padding: "0.75rem 2rem",
-              borderRadius: "8px",
-              border: "none",
-              backgroundColor: submitting ? "#5eff0080" : "#5eff00",
-              color: "#1a1a2e",
-              fontSize: "1rem",
-              fontWeight: "600",
-              cursor: submitting ? "not-allowed" : "pointer",
-              transition: "all 0.3s ease",
-            }}
-            onMouseEnter={(e) => {
-              if (!submitting) {
-                (e.target as HTMLButtonElement).style.backgroundColor = "#4de600";
-              }
-            }}
-            onMouseLeave={(e) => {
-              if (!submitting) {
-                (e.target as HTMLButtonElement).style.backgroundColor = "#5eff00";
-              }
-            }}
           >
             {submitting ? "Сохранение..." : "✅ Сохранить изменения"}
           </button>

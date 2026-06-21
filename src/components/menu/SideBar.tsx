@@ -1,6 +1,7 @@
 import { useNavigate, useLocation } from "react-router";
 import { StyledSideButton } from "./styledSideBar";
 import { useUser } from "../context/UserContext";
+import { useMobileMenu } from "./MobileMenuContext";
 
 type Props = {
   className?: string;
@@ -12,6 +13,12 @@ export default function SideBar(props: Props) {
   const navigate = useNavigate();
   const location = useLocation();
   const { user } = useUser();
+  const { isOpen, close } = useMobileMenu();
+
+  const handleNavigate = (path: string) => {
+    navigate(path);
+    close();
+  };
 
 
 
@@ -40,25 +47,34 @@ export default function SideBar(props: Props) {
   };
 
   return (
-    <div className={props.className}>
-      {menuItems.map((item) => {
-        if (
-          (item.id === "create" || item.id === "my-courses") &&
-          user?.role.name !== "Admin" &&
-          user?.role.name !== "Author"
-        ) {
-          return;
-        }
+    <>
+      {isOpen && (
+        <div
+          className="sidebar-backdrop"
+          onClick={close}
+          aria-hidden="true"
+        />
+      )}
+      <nav className={props.className + (isOpen ? " sidebar--open" : "")}>
+        {menuItems.map((item) => {
+          if (
+            (item.id === "create" || item.id === "my-courses") &&
+            user?.role.name !== "Admin" &&
+            user?.role.name !== "Author"
+          ) {
+            return null;
+          }
           return (
             <StyledSideButton
               key={item.id}
               buttonName={item.name}
               icon={item.icon}
               active={getActiveMenu() === item.id}
-              onClick={() => navigate(item.path)}
+              onClick={() => handleNavigate(item.path)}
             />
-          )
-      })}
-    </div>
+          );
+        })}
+      </nav>
+    </>
   );
 }

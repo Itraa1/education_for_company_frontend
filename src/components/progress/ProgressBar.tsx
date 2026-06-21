@@ -1,3 +1,4 @@
+import type { CSSProperties } from "react";
 import "./ProgressBar.css";
 
 interface ProgressBarProps {
@@ -16,7 +17,10 @@ export default function ProgressBar({ completed, total, label }: ProgressBarProp
         <span>{percent}%</span>
       </div>
       <div className="progress-bar__track">
-        <div className="progress-bar__fill" style={{ width: `${percent}%` }} />
+        <div
+          className="progress-bar__fill"
+          style={{ "--progress-bar-value": `${percent}%` } as CSSProperties}
+        />
       </div>
     </div>
   );

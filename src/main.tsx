@@ -14,11 +14,13 @@ import MyCourses from "./pages/MyCourses";
 import CourseStudents from "./pages/CourseStudents";
 import { UserProvider } from "./components/context/UserProvider.tsx";
 import { ToastProvider } from "./components/toast/ToastProvider.tsx";
+import { MobileMenuProvider } from "./components/menu/MobileMenuContext.tsx";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <ToastProvider>
       <UserProvider>
+        <MobileMenuProvider>
         <BrowserRouter>
         <Routes>
           <Route path="/" element={<App />} />
@@ -33,6 +35,7 @@ createRoot(document.getElementById("root")!).render(
           <Route path="/auth" element={<Auth />} />
         </Routes>
         </BrowserRouter>
+        </MobileMenuProvider>
       </UserProvider>
     </ToastProvider>
   </StrictMode>,

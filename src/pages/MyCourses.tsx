@@ -70,16 +70,16 @@ export default function MyCourses() {
       )}
 
       {loading ? (
-        <div style={{ textAlign: "center", padding: "3rem 0", color: "var(--text-secondary)" }}>
-          <p style={{ fontSize: "1.2rem" }}>⏳ Загрузка курсов...</p>
+        <div className="state">
+          <p className="state__text">⏳ Загрузка курсов...</p>
         </div>
       ) : courses.length === 0 ? (
-        <div style={{ textAlign: "center", padding: "3rem 0", color: "var(--text-secondary)" }}>
-          <p style={{ fontSize: "1.2rem" }}>📚 У вас пока нет созданных курсов</p>
-          <p style={{ fontSize: "0.95rem", marginTop: "0.5rem" }}>Создайте первый курс, чтобы он появился здесь</p>
+        <div className="state">
+          <p className="state__text">📚 У вас пока нет созданных курсов</p>
+          <p className="state__hint">Создайте первый курс, чтобы он появился здесь</p>
           <button
+            className="state__action"
             onClick={() => navigate("/create")}
-            style={{ marginTop: "1.5rem" }}
           >
             Создать курс
           </button>
@@ -90,9 +90,8 @@ export default function MyCourses() {
             {courses.map((course) => (
               <div
                 key={course.documentId}
-                className="course-card"
+                className="course-card course-card--clickable"
                 onClick={() => handleCourseClick(course.documentId)}
-                style={{ cursor: "pointer" }}
               >
                 <div className="course-card-image">
                   {getCategoryIcon(course.category)}
@@ -104,17 +103,17 @@ export default function MyCourses() {
                   </p>
                   <div className="course-card-meta">
                     <span>⏱️ {course.duration} часов</span>
-                    <span style={{ fontSize: "0.85rem", color: "var(--text-secondary)" }}>
+                    <span className="course-card-meta__note">
                       📅 {new Date(course.createdAt).toLocaleDateString("ru-RU")}
                     </span>
                   </div>
                   <div className="course-card-meta">
-                    <span className="course-card-badge" style={{ backgroundColor: "#5eff00" }}>
+                    <span className="course-card-badge">
                       {getCategoryLabel(course.category)}
                     </span>
                   </div>
                   <div className="course-card-meta">
-                    <span style={{ fontSize: "0.85rem", color: "var(--text-secondary)" }}>
+                    <span className="course-card-meta__note">
                       Уровень: {getLevelLabel(course.level)}
                     </span>
                   </div>
@@ -125,16 +124,10 @@ export default function MyCourses() {
                     ✏️ Редактировать
                   </button>
                   <button
-                    className="course-card-button"
+                    className="course-card-button course-card-button--outline"
                     onClick={(e) => {
                       e.stopPropagation();
                       navigate(`/course/${course.documentId}/students`);
-                    }}
-                    style={{
-                      marginTop: "0.5rem",
-                      backgroundColor: "transparent",
-                      color: "var(--secondary-color)",
-                      border: "1px solid var(--secondary-color)",
                     }}
                   >
                     👥 Прогресс студентов
