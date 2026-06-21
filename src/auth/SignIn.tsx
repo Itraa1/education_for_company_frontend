@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import { publicRequest } from "../controllers/api/axiosInstance";
+import { checkAuth } from "../controllers/chechAuth";
 
 export default function SignIn() {
   const [isSubmiting, setIsSubmiting] = useState(false);
@@ -50,14 +51,37 @@ export default function SignIn() {
         identifier: userInformation.email,
         password: userInformation.password,
       })
-      .then((res) => {
+      .then(async (res) => {
         localStorage.setItem("auth_token", res!.data.jwt);
-        navigate("/");
+        const ok = await checkAuth(true);
+        if (ok) {
+          navigate("/");
+        } else {
+          setError("Не удалось загрузить профиль. Попробуйте ещё раз.");
+        }
       })
       .catch((error) => {
         console.log("Полная ошибка:", error);
+        console.log("Ответ сервера:", error.response?.data);
+
+        const serverMessage: string | undefined =
+          error.response?.data?.error?.message;
+
         if (error.response?.status === 400) {
-          setError("Неверные учетные данные");
+          const messageMap: Record<string, string> = {
+            "Invalid identifier or password": "Неверный email или пароль",
+            "Your account email is not confirmed":
+              "Email не подтверждён. Проверьте почту.",
+            "Your account has been blocked by an administrator":
+              "Аккаунт заблокирован администратором",
+          };
+          setError(
+            (serverMessage && messageMap[serverMessage]) ||
+              serverMessage ||
+              "Неверные учетные данные"
+          );
+        } else if (!error.response) {
+          setError("Нет связи с сервером. Проверьте, запущен ли бэкенд.");
         } else {
           setError("Ошибка подключения. Попробуйте позже");
         }
