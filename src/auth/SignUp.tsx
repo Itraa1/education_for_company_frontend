@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router";
 import { publicRequest } from "../controllers/api/axiosInstance";
+import { checkAuth } from "../controllers/chechAuth";
 
 export default function SignUP() {
   const [isSubmiting, setIsSubmiting] = useState(false);
@@ -59,9 +60,14 @@ export default function SignUP() {
         email: formData.email,
         password: formData.password,
       })
-      .then((res) => {
+      .then(async (res) => {
         localStorage.setItem("auth_token", res!.data.jwt);
-        navigate("/");
+        const ok = await checkAuth(true);
+        if (ok) {
+          navigate("/");
+        } else {
+          setError("Не удалось загрузить профиль. Попробуйте ещё раз.");
+        }
       })
       .catch((error) => {
         console.log("Полная ошибка:", error);
